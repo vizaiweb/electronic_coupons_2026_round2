@@ -597,10 +597,49 @@
         return `${y}-${m}-${d}`;
     }
 
+    /* ===== 新增：計算「當前應該預設哪一週」 ===== */
+    function getDefaultWeekKey() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // 活動未開始
+        if (today < ACTIVITY_START) {
+            return weeksData.length > 0 ? weeksData[0].key : '';
+        }
+        // 活動已結束
+        if (today > ACTIVITY_END) {
+            return weeksData.length > 0 ? weeksData[weeksData.length - 1].key : '';
+        }
+
+        const day = today.getDay(); // 0=日, 1=一, ..., 5=五, 6=六
+
+        // 週五、週六、週日 → 屬於「當前領券週」
+        if (day === 5 || day === 6 || day === 0) {
+            // 找到包含今天的週
+            for (let wk of weeksData) {
+                if (today >= wk.friday && today <= wk.sunday) {
+                    return wk.key;
+                }
+            }
+            // 若因邊界找不到，退回最後一週
+            return weeksData.length > 0 ? weeksData[weeksData.length - 1].key : '';
+        }
+
+        // 週一～週四 → 回傳「剛過去的那一週」
+        // 找出 sunday < today 且最接近今天的週
+        let candidates = weeksData.filter(wk => wk.sunday < today);
+        if (candidates.length > 0) {
+            return candidates[candidates.length - 1].key;
+        }
+        // 若沒有已過去的週（例如活動第一週的週一前），退回第一週
+        return weeksData.length > 0 ? weeksData[0].key : '';
+    }
+    /* ===== 新增結束 ===== */
+
     const WALLETS = [
         "MPay",
         "支付寶（澳門）",
-        "澳門中銀手機銀行",
+        "中銀手機銀行",
         "工銀e支付",
         "豐付寶",
         "廣發移動支付錢包",
@@ -635,10 +674,17 @@
         return wk ? wk.label : key;
     }
 
+    /* ===== 修改：新增下拉時，預設使用「當前所屬週」 ===== */
     function refreshAddWeekSelectOnly() {
         let weekSelectAdd = document.getElementById('weekSelectAdd');
         if (!weekSelectAdd) return;
+
+        // 若目前尚未有值，則使用「當前所屬週」作為預設
         let currentSelectedKey = weekSelectAdd.value;
+        if (!currentSelectedKey) {
+            currentSelectedKey = getDefaultWeekKey();
+        }
+
         weekSelectAdd.innerHTML = '';
         weeksData.forEach(wk => {
             let option = document.createElement('option');
@@ -646,12 +692,14 @@
             option.textContent = wk.label;
             weekSelectAdd.appendChild(option);
         });
+
         if (currentSelectedKey && weeksData.some(w => w.key === currentSelectedKey)) {
             weekSelectAdd.value = currentSelectedKey;
         } else if (weeksData.length) {
-            weekSelectAdd.value = weeksData[0].key;
+            weekSelectAdd.value = getDefaultWeekKey() || weeksData[0].key;
         }
     }
+    /* ===== 修改結束 ===== */
 
     function refreshDropdowns() {
         let weekStatsSelect = document.getElementById('weekStatsSelect');
@@ -669,7 +717,7 @@
             if(oldStatsVal && weeksData.some(w => w.key === oldStatsVal)) {
                 weekStatsSelect.value = oldStatsVal;
             } else if(weeksData.length) {
-                weekStatsSelect.value = weeksData[0].key;
+                weekStatsSelect.value = getDefaultWeekKey() || weeksData[0].key;
             }
             weekStatsSelect.dispatchEvent(new Event('change'));
         }
