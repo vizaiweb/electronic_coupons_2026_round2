@@ -387,6 +387,29 @@
             flex: 1;
             line-height: 1.4;
         }
+
+        .privacy-with-counter {
+    flex-wrap: wrap;
+    gap: 10px 16px;
+}
+.privacy-with-counter .counter-line {
+    display: inline-flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+@media (max-width: 600px) {
+    .privacy-with-counter {
+        align-items: flex-start;
+    }
+    .privacy-with-counter .text {
+        flex: 1 1 100%;
+    }
+    .privacy-with-counter .counter-line {
+        flex: 1 1 100%;
+        padding-left: 26px;
+    }
+}
+        
         .hint-box {
             background: #fff8ee;
             border-left: 4px solid #f4a261;
@@ -524,12 +547,15 @@
             <button class="btn btn-outline" id="importDataBtn">📂 匯入資料 (JSON)</button>
             <button class="btn btn-danger" id="resetDataBtn" style="background:#bc6c25;">⚠️ 重置所有數據</button>
 
-          <!-- 隱私保障聲明 + 訪問計數 -->
-<div class="privacy-notice" style="flex-wrap:wrap; gap:16px;">
+          
+<!-- 隱私保障聲明 + 訪問計數 -->
+<div class="privacy-notice privacy-with-counter">
     <span class="icon">🔒</span>
-    <span class="text">隱私保障：所有資料僅儲存於您的瀏覽器本地，絕不上傳任何雲端伺服器，請安心使用。</span>
-    <span style="white-space:nowrap;">總訪問次數：<strong id="busuanzi_value_site_pv">—</strong></span>
-    <span style="white-space:nowrap;">訪客人數：<strong id="busuanzi_value_site_uv">—</strong></span>
+    <span class="text">隱私保障：所有資料僅儲存於您的瀏覽器本地，絕不上傳雲端。</span>
+    <span class="counter-line">
+        <span style="white-space:nowrap;">總訪問次數：<strong id="busuanzi_value_site_pv">—</strong></span>
+        <span style="white-space:nowrap;">訪客人數：<strong id="busuanzi_value_site_uv">—</strong></span>
+    </span>
 </div>
         </div>
     </div>
