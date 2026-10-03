@@ -388,26 +388,38 @@
             line-height: 1.4;
         }
 
-        .privacy-with-counter {
-    flex-wrap: wrap;
-    gap: 10px 16px;
+      .privacy-with-counter {
+    flex-wrap: nowrap;
+    gap: 12px;
+}
+.privacy-with-counter .text {
+    flex: 1 1 auto;
+    min-width: 0;
 }
 .privacy-with-counter .counter-line {
     display: inline-flex;
     gap: 16px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    margin-left: auto;   /* 靠最右 */
+    white-space: nowrap;
 }
+
 @media (max-width: 600px) {
     .privacy-with-counter {
-        align-items: flex-start;
+        flex-wrap: wrap;
+        align-items: center;
     }
     .privacy-with-counter .text {
-        flex: 1 1 100%;
+        flex: 1 1 auto;
+        min-width: 0;
     }
     .privacy-with-counter .counter-line {
         flex: 1 1 100%;
-        padding-left: 26px;
+        justify-content: flex-end;   /* 靠右 */
+        margin-left: 0;
+        padding-left: 26px;          /* 對齊圖示縮排（可選） */
     }
+}
 }
         
         .hint-box {
@@ -550,7 +562,7 @@
           
 <!-- 隱私保障聲明 + 訪問計數 -->
 <div class="privacy-notice privacy-with-counter">
-    <span class="icon">🔒</span>
+   
     <span class="text">隱私保障：所有資料僅儲存於您的瀏覽器本地，絕不上傳雲端。</span>
     <span class="counter-line">
         <span style="white-space:nowrap;">總訪問次數：<strong id="busuanzi_value_site_pv">—</strong></span>
