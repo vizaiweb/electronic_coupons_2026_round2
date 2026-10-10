@@ -3,786 +3,1155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>2026社區消費連環賞 - 電子優惠券管理工具</title>
-    <meta name="description" content="澳門2026社區消費連環賞，簡潔實用的電子優惠券記錄工具，專用於記錄消費後抽獎所得的電子禮券，方便查閱及管理使用狀態。">
-    <meta name="keywords" content="2026社區消費連環賞,澳門社區消費,電子支付消費,電子錢包,消費優惠,滿減禮遇券">
+    <title>2026社區消費連環賞 - 優惠券管理器</title>
+    <meta name="description" content="澳門2026社區消費連環賞，簡潔實用的電子優惠券記錄工具。">
     <style>
         * {
             box-sizing: border-box;
-            font-family: system-ui, 'Segoe UI', 'Roboto', 'Noto Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Noto Sans', 'PingFang TC', 'Microsoft YaHei', sans-serif;
         }
         body {
-            background: #eef4fb;
+            background: #f5f7fb;
             margin: 0;
-            padding: 20px;
+            padding: 0 0 100px 0;
+            color: #1a2f4a;
+            min-height: 100vh;
+        }
+        .app {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 4px 16px;
+        }
+        .app-header h1 {
+            margin: 0;
+            font-size: 1.15rem;
+            color: #1a2f4a;
+            font-weight: 700;
+        }
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 50%;
+            color: #1e5f9e;
+            transition: 0.2s;
+        }
+        .icon-btn:active {
+            background: #e8eef7;
+        }
+
+        .activity-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(30, 95, 158, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .activity-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .activity-icon {
+            width: 38px;
+            height: 38px;
+            background: #e6f4ea;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        .activity-info .label {
+            font-size: 0.72rem;
+            color: #7b8a9e;
+            margin-bottom: 2px;
+        }
+        .activity-info .value {
+            font-size: 0.9rem;
+            font-weight: 600;
             color: #1a2f4a;
         }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
+        .activity-status {
+            background: #e6f4ea;
+            color: #1e7a3f;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            white-space: nowrap;
         }
-        .header {
-            background: linear-gradient(135deg, #1e5f9e, #14406e);
-            color: white;
-            padding: 20px 24px;
-            border-radius: 32px;
-            margin-bottom: 28px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        .activity-status.ended {
+            background: #f5e6e6;
+            color: #a23b3b;
         }
-        .header h1 {
-            margin: 0 0 8px 0;
-            font-size: 1.8rem;
+        .activity-status.pending {
+            background: #fdf3e3;
+            color: #a16b1a;
         }
-        .header p {
-            margin: 0;
-            opacity: 0.9;
-            font-size: 0.95rem;
-            line-height: 1.5;
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
         }
-        .date-badge {
-    background: #dce9f7;
-    color: #14406e;
-    display: inline-block;
-    padding: 5px 14px;
-    border-radius: 40px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin-top: 8px;
-    border: 1px solid #b8d4f0;
-}
-        .header-sub {
-            margin-top: 8px;
-        }
-        .header-date-line {
-            display: inline-block;
-            margin-right: 8px;
-        }
-        @media (max-width: 700px) {
-            .header-date-line {
-                display: block;
-                margin-bottom: 6px;
-            }
-            .header-rule-line {
-                display: block;
-                margin-top: 4px;
-            }
-        }
-        .dashboard {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 28px;
-        }
-        .left-panel {
-            flex: 1.2;
-            min-width: 320px;
-        }
-        .right-panel {
-            flex: 2;
-            min-width: 500px;
-        }
-        .card {
-            background: white;
-            border-radius: 28px;
-            padding: 20px 24px;
-            margin-bottom: 28px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            transition: all 0.2s;
-            border: 1px solid #d6e3f2;
-        }
-        .card h2 {
-            font-size: 1.4rem;
-            margin-top: 0;
-            margin-bottom: 18px;
-            border-left: 5px solid #1e5f9e;
-            padding-left: 16px;
-            color: #123a5e;
-        }
-        .form-group {
-            margin-bottom: 18px;
-        }
-        label {
-            font-weight: 600;
-            display: block;
-            margin-bottom: 6px;
-            font-size: 0.85rem;
-            color: #1e4a72;
-        }
-        select, input, textarea {
-            width: 100%;
-            padding: 10px 14px;
-            border-radius: 60px;
-            border: 1px solid #c2d6ea;
-            background: #fff;
-            font-size: 0.95rem;
-            outline: none;
-            transition: 0.2s;
-        }
-        textarea {
+        .stat-card {
+            background: #ffffff;
             border-radius: 20px;
-            resize: vertical;
-            font-family: inherit;
+            padding: 14px 16px;
+            box-shadow: 0 2px 8px rgba(30, 95, 158, 0.06);
         }
-        select:focus, input:focus, textarea:focus {
-            border-color: #1e5f9e;
-            box-shadow: 0 0 0 2px rgba(30,95,158,0.2);
+        .stat-card.blue {
+            background: linear-gradient(135deg, #e8f1fb, #dbe9f9);
         }
-        .btn {
-            background: #1e5f9e;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 40px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-right: 10px;
+        .stat-card.purple {
+            background: linear-gradient(135deg, #eee8fb, #e4daf8);
+        }
+        .stat-card .stat-head {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            color: #5a7690;
             margin-bottom: 8px;
-        }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid #1e5f9e;
-            color: #1e5f9e;
-        }
-        .btn-danger {
-            background: #e76f51;
-        }
-
-        /* 新增記錄按鈕 —— 橙色漸變、整行寬度、帶陰影 */
-.btn-add-voucher {
-    display: block;
-    width: 100%;
-    background: linear-gradient(135deg, #ffb347, #ff8c42);
-    color: #ffffff;
-    border: none;
-    border-radius: 40px;
-    padding: 12px 20px;
-    font-weight: bold;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(255, 140, 66, 0.35);
-    margin-top: 8px;
-    margin-bottom: 4px;
-}
-
-.btn-add-voucher:hover {
-    background: linear-gradient(135deg, #ffa033, #ff7a2e);
-    box-shadow: 0 6px 16px rgba(255, 140, 66, 0.45);
-    transform: translateY(-1px);
-}
-
-.btn-add-voucher:active {
-    transform: scale(0.97);
-    box-shadow: 0 2px 8px rgba(255, 140, 66, 0.3);
-}
-        
-        .btn-sm {
-            padding: 4px 10px;
-            font-size: 0.7rem;
-        }
-        .btn:hover {
-            filter: brightness(0.95);
-            transform: translateY(-1px);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-        }
-        th, td {
-            text-align: left;
-            padding: 12px 8px;
-            border-bottom: 1px solid #e2ecf7;
-            vertical-align: middle;
-        }
-        th {
-            background: #e9f1f9;
             font-weight: 600;
-            color: #14406e;
-            white-space: nowrap;
         }
-        td:nth-child(2), th:nth-child(2) {
-            white-space: normal;
-            word-break: break-word;
-            min-width: 140px;
+        .stat-card .stat-head .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
         }
-        td:nth-child(1), td:nth-child(3), td:nth-child(4), td:nth-child(5), td:nth-child(6) {
-            white-space: nowrap;
-        }
-        td:nth-child(8), th:nth-child(8) {
-            min-width: 200px;
-            white-space: normal;
-        }
-        td:nth-child(9), th:nth-child(9) {
-            white-space: nowrap;
-            min-width: 100px;
-        }
-        .used-badge {
-            background: #a9c4de;
-            color: #14304a;
-            padding: 4px 10px;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            display: inline-block;
-            white-space: nowrap;
-        }
-        .used-true {
-            background: #1e5f9e;
-            color: white;
-        }
-        .coupon-type-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-        .coupon-type-gov {
-            background: #dce9f7;
-            color: #14406e;
-        }
-        .coupon-type-merchant {
-            background: #ffe8cc;
-            color: #8a4b00;
-        }
-        .coupon-type-gift {
-            background: #e2f0d9;
-            color: #2d5a1b;
-        }
-        .summary-stats {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 18px;
-            margin-bottom: 18px;
-            background: #f4f8fc;
-            padding: 14px 18px;
-            border-radius: 28px;
-        }
-        .stat {
-            flex: 1;
-            background: white;
-            border-radius: 24px;
-            padding: 12px 15px;
-            text-align: center;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-            min-width: 130px;
-        }
-        .stat-value {
-            font-size: 1.7rem;
+        .stat-card.blue .dot { background: #3b7cbf; }
+        .stat-card.purple .dot { background: #8b5cf6; }
+        .stat-card .stat-num {
+            font-size: 1.5rem;
             font-weight: 800;
-            color: #1e5f9e;
+            color: #1a2f4a;
+            letter-spacing: -0.5px;
         }
-        .stat-label {
+        .stat-card .stat-num small {
             font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #5a7690;
-        }
-        .week-selector {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-        .filter-bar {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            padding: 12px 16px;
-            background: #f4f8fc;
-            border-radius: 60px;
-        }
-        .filter-bar label {
-            margin-bottom: 0;
             font-weight: 600;
-            font-size: 0.85rem;
-        }
-        .filter-bar select {
-            width: auto;
-            min-width: 200px;
-            flex: 1;
-        }
-        .filter-badge {
-            background: #1e5f9e;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-        @media (max-width: 800px) {
-            body { padding: 12px; }
-            .left-panel, .right-panel { min-width: 100%; }
-            .filter-bar select { width: 100%; }
-            .table-responsive {
-                overflow-x: auto;
-            }
-            td:nth-child(8), th:nth-child(8) {
-                min-width: 200px;
-            }
-        }
-        .delete-btn {
-            background: #e76f51;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 4px 12px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-        .delete-btn:hover {
-            background: #bc4e2c;
-        }
-        .use-btn {
-            background: #1e5f9e;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 4px 12px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            margin-right: 6px;
-            white-space: nowrap;
-        }
-        .edit-note-btn {
-            background: #e9c46a;
-            color: #2d3e2b;
-            border: none;
-            border-radius: 30px;
-            padding: 4px 12px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            white-space: nowrap;
-            min-width: 70px;
-        }
-        .note-text-display {
-            font-size: 0.75rem;
             color: #5a7690;
-            word-break: break-word;
-            max-width: 250px;
-            display: inline-block;
-            line-height: 1.4;
+            margin-left: 3px;
         }
-        .note-placeholder {
-            color: #b8c9db;
-            font-style: italic;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background: white;
-            padding: 24px;
-            border-radius: 28px;
-            max-width: 400px;
-            width: 90%;
-        }
-        .modal-content h3 {
-            margin-top: 0;
-            color: #123a5e;
-        }
-        .modal-content textarea {
-            width: 100%;
-            margin: 16px 0;
-            min-height: 100px;
-        }
-        .modal-buttons {
+
+        .section-title {
             display: flex;
-            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 0 4px;
+            gap: 8px;
+        }
+        .section-title h2 {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #1a2f4a;
+            white-space: nowrap;
+        }
+        .section-title .right-part {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
             justify-content: flex-end;
+            min-width: 0;
         }
-        .table-count-info {
+        .section-title .count {
             font-size: 0.8rem;
-            color: #5a7690;
-            margin-top: 12px;
-            padding-left: 8px;
+            color: #7b8a9e;
+            font-weight: 500;
+            white-space: nowrap;
         }
-        .table-responsive {
-            overflow-x: auto;
+        .week-view-select {
+            padding: 6px 10px;
+            border: 1.5px solid #d6e3f2;
+            border-radius: 12px;
+            font-size: 0.78rem;
+            background: #ffffff;
+            color: #1a2f4a;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+            width: auto;
+            min-width: 160px;
+            max-width: 100%;
         }
-        .storage-section {
-            margin-top: 28px;
+        .week-view-select:focus {
+            border-color: #1e5f9e;
         }
-        .privacy-notice {
-            background: #eaf2fb;
+
+        .wallet-group {
+            background: #ffffff;
             border-radius: 20px;
-            padding: 12px 16px;
-            margin-top: 16px;
+            padding: 14px 16px 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(30, 95, 158, 0.06);
+        }
+        .wallet-header {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 0.85rem;
-            color: #1e5f9e;
-            border-left: 4px solid #1e5f9e;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f4f9;
         }
-        .privacy-notice .icon {
-            font-size: 1.1rem;
+        .wallet-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: white;
+            font-size: 0.75rem;
+            flex-shrink: 0;
         }
-        .privacy-notice .text {
+        .wallet-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #1a2f4a;
             flex: 1;
-            line-height: 1.4;
+        }
+        .wallet-meta {
+            font-size: 0.72rem;
+            color: #7b8a9e;
         }
 
-        .privacy-with-counter {
-            flex-wrap: nowrap;
-            gap: 12px;
+        .voucher-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
         }
-        .privacy-with-counter .text {
-            flex: 1 1 auto;
-            min-width: 0;
-        }
-        .privacy-with-counter .counter-line {
-            display: inline-flex;
-            gap: 16px;
-            flex-wrap: nowrap;
-            margin-left: auto;
-            white-space: nowrap;
-        }
-
-        @media (max-width: 600px) {
-            .privacy-with-counter {
-                flex-wrap: wrap;
-                align-items: center;
-            }
-            .privacy-with-counter .text {
-                flex: 1 1 auto;
-                min-width: 0;
-            }
-            .privacy-with-counter .counter-line {
-                flex: 1 1 100%;
-                justify-content: flex-end;
-                margin-left: 0;
-                padding-left: 26px;
+        @media (max-width: 380px) {
+            .voucher-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
-
-        .hint-box {
+        .voucher-card {
+            background: #f8fbff;
+            border: 1.5px solid #d6e3f2;
+            border-radius: 16px;
+            padding: 12px 6px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+        }
+        .voucher-card:active {
+            transform: scale(0.96);
+        }
+        .voucher-card.used {
+            background: #f3f5f8;
+            border-color: #e2e6ec;
+            opacity: 0.65;
+        }
+        .voucher-card.expired {
+            background: #fdf0ed;
+            border-color: #f5c9c0;
+            opacity: 0.85;
+        }
+        .voucher-card.merchant {
             background: #fff8ee;
-            border-left: 4px solid #f4a261;
-            border-radius: 20px;
-            padding: 10px 14px;
-            font-size: 0.82rem;
-            line-height: 1.5;
-            color: #7a4a1d;
-            margin-bottom: 18px;
+            border-color: #ffddb0;
         }
-        .hint-box strong { color: #b35c00; }
-        .deadline-line {
-            margin-top: 10px;
-            font-size: 0.85rem;
-            background: #fff4e6;
-            border-radius: 20px;
-            padding: 10px 14px;
-            border-left: 4px solid #f4a261;
-            color: #7a4a1d;
+        .voucher-card.gift {
+            background: #f1f8ec;
+            border-color: #cbe5b8;
         }
-        .rule-note {
-            margin-top: 8px;
-            font-size: 0.8rem;
-            background: #e9f2fb;
-            border-radius: 20px;
+        .voucher-card .v-amount {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #1e5f9e;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+        }
+        .voucher-card.used .v-amount {
+            color: #98a4b3;
+        }
+        .voucher-card.expired .v-amount {
+            color: #c94a2c;
+        }
+        .voucher-card.merchant .v-amount {
+            color: #b35c00;
+            font-size: 1.05rem;
+        }
+        .voucher-card.gift .v-amount {
+            color: #2d5a1b;
+            font-size: 1.05rem;
+        }
+        .voucher-card .v-status {
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-top: 6px;
+            color: #3b7cbf;
+        }
+        .voucher-card.used .v-status {
+            color: #98a4b3;
+        }
+        .voucher-card.expired .v-status {
+            color: #c94a2c;
+        }
+        .voucher-card .v-id {
+            position: absolute;
+            top: 4px;
+            right: 6px;
+            font-size: 0.6rem;
+            color: #b0bcc9;
+            font-weight: 600;
+        }
+
+        .days-remaining {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #8b5a1a;
+            background: #fff8ee;
             padding: 8px 12px;
-            line-height: 1.5;
+            border-radius: 12px;
+            border: 1px solid #ffe0b0;
+        }
+        .days-remaining.urgent {
+            color: #c94a2c;
+            background: #fdf0ed;
+            border-color: #f5c9c0;
         }
 
-/* 向右滑動提示 */
-.scroll-hint {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: #1e5f9e;
-    font-weight: bold;
-    font-size: 1rem;
-    margin-left: 6px;
-    animation: scrollHintPulse 1.5s ease-in-out infinite;
-}
+        .empty-state {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            color: #7b8a9e;
+            box-shadow: 0 2px 8px rgba(30, 95, 158, 0.06);
+        }
+        .empty-state .emoji {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 10px;
+            opacity: 0.6;
+        }
+        .empty-state p {
+            margin: 0;
+            font-size: 0.85rem;
+        }
 
-@keyframes scrollHintPulse {
-    0%, 100% { transform: translateX(0); opacity: 0.7; }
-    50%      { transform: translateX(4px); opacity: 1; }
-}
+        .fab {
+            position: fixed;
+            right: 20px;
+            bottom: 24px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb347, #ff8c42);
+            color: white;
+            border: none;
+            font-size: 1.7rem;
+            font-weight: 300;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(255, 140, 66, 0.45);
+            transition: all 0.2s;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        .fab:active {
+            transform: scale(0.94);
+        }
 
-/* 桌機上表格不會橫向溢出，隱藏提示 */
-@media (min-width: 801px) {
-    .scroll-hint {
-        display: none;
-    }
-}
-        
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(20, 40, 70, 0.45);
+            z-index: 100;
+            align-items: flex-end;
+            justify-content: center;
+            backdrop-filter: blur(2px);
+        }
+        .overlay.open {
+            display: flex;
+        }
+        .sheet {
+            background: #ffffff;
+            width: 100%;
+            max-width: 520px;
+            border-radius: 24px 24px 0 0;
+            padding: 20px 20px 28px;
+            max-height: 88vh;
+            overflow-y: auto;
+            animation: slideUp 0.25s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .sheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            position: sticky;
+            top: -20px;
+            background: #ffffff;
+            padding: 6px 0 10px;
+            z-index: 2;
+        }
+        .sheet-header h3 {
+            margin: 0;
+            font-size: 1.05rem;
+            color: #1a2f4a;
+        }
+        .close-btn {
+            background: #f0f4f9;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #5a7690;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .field {
+            margin-bottom: 14px;
+        }
+        .field label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #5a7690;
+            margin-bottom: 6px;
+            padding-left: 4px;
+        }
+        .field select,
+        .field input,
+        .field textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #d6e3f2;
+            border-radius: 14px;
+            font-size: 0.92rem;
+            background: #ffffff;
+            outline: none;
+            transition: 0.15s;
+            font-family: inherit;
+            color: #1a2f4a;
+        }
+        .field select:focus,
+        .field input:focus,
+        .field textarea:focus {
+            border-color: #1e5f9e;
+            box-shadow: 0 0 0 3px rgba(30, 95, 158, 0.1);
+        }
+        .field textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #ffb347, #ff8c42);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 14px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 140, 66, 0.35);
+            margin-top: 6px;
+            transition: 0.2s;
+        }
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+        .submit-btn.secondary {
+            background: #f0f4f9;
+            color: #1e5f9e;
+            box-shadow: none;
+        }
+        .submit-btn.danger {
+            background: #e76f51;
+            box-shadow: 0 4px 12px rgba(231, 111, 81, 0.35);
+        }
+
+        .detail-amount {
+            text-align: center;
+            padding: 16px 0 8px;
+        }
+        .detail-amount .big {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #1e5f9e;
+            letter-spacing: -1px;
+        }
+        .detail-amount .big.merchant { color: #b35c00; font-size: 1.6rem; }
+        .detail-amount .big.gift { color: #2d5a1b; font-size: 1.6rem; }
+        .detail-amount .big small {
+            font-size: 0.9rem;
+            color: #5a7690;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+        .detail-type {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #7b8a9e;
+            margin-bottom: 16px;
+        }
+        .detail-rows {
+            background: #f8fbff;
+            border-radius: 16px;
+            padding: 4px 14px;
+            margin-bottom: 16px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 11px 0;
+            border-bottom: 1px solid #e8eef7;
+            font-size: 0.88rem;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-row .k {
+            color: #5a7690;
+            font-weight: 500;
+        }
+        .detail-row .v {
+            color: #1a2f4a;
+            font-weight: 600;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-word;
+        }
+        .detail-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .detail-actions .submit-btn {
+            margin-top: 0;
+        }
+        .detail-note-btn {
+            grid-column: 1 / -1;
+        }
+
+        .settings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .settings-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: #f8fbff;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #1a2f4a;
+            text-align: left;
+            width: 100%;
+            font-weight: 500;
+            transition: 0.15s;
+        }
+        .settings-item:active {
+            background: #eef4fb;
+        }
+        .settings-item .icon {
+            font-size: 1.15rem;
+        }
+        .settings-item.danger {
+            color: #c94a2c;
+            background: #fdf0ed;
+        }
+
+        .lang-switcher {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .lang-btn {
+            flex: 1;
+            padding: 10px 6px;
+            border: 1.5px solid #d6e3f2;
+            background: #ffffff;
+            color: #1a2f4a;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            font-family: inherit;
+        }
+        .lang-btn.active {
+            background: #1e5f9e;
+            color: white;
+            border-color: #1e5f9e;
+        }
+
+        .settings-note {
+            margin-top: 16px;
+            padding: 12px 14px;
+            background: #f0f6fc;
+            border-radius: 14px;
+            font-size: 0.75rem;
+            color: #5a7690;
+            line-height: 1.5;
+            display: flex;
+            gap: 8px;
+        }
+        .settings-note .icon { font-size: 0.95rem; }
+
+        #importFileInput { display: none; }
+
+        @media (min-width: 900px) {
+            .app {
+                max-width: 900px;
+            }
+            .voucher-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .fab {
+                right: calc(50% - 450px + 20px);
+            }
+        }
+        @media (min-width: 1200px) {
+            .app {
+                max-width: 1100px;
+            }
+            .voucher-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            .fab {
+                right: calc(50% - 550px + 24px);
+            }
+        }
+
+        .wallet-avatar[data-wallet="MPay"] { background: #e83f3f; }
+        .wallet-avatar[data-wallet="支付寶（澳門）"],
+        .wallet-avatar[data-wallet="支付宝（澳门）"],
+        .wallet-avatar[data-wallet="Alipay (Macau)"] { background: #1677ff; }
+        .wallet-avatar[data-wallet="澳門中銀手機銀行"],
+        .wallet-avatar[data-wallet="澳门中银手机银行"],
+        .wallet-avatar[data-wallet="BOC Macau"] { background: #c8102e; }
+        .wallet-avatar[data-wallet="工銀e支付"],
+        .wallet-avatar[data-wallet="工银e支付"],
+        .wallet-avatar[data-wallet="ICBC e-Pay"] { background: #b41f24; }
+        .wallet-avatar[data-wallet="豐付寶"],
+        .wallet-avatar[data-wallet="丰付宝"],
+        .wallet-avatar[data-wallet="Fung Fu Bao"] { background: #00693e; }
+        .wallet-avatar[data-wallet="廣發移動支付錢包"],
+        .wallet-avatar[data-wallet="广发移动支付钱包"],
+        .wallet-avatar[data-wallet="CGB Mobile Wallet"] { background: #c8102e; }
+        .wallet-avatar[data-wallet="LusoPay"] { background: #e30613; }
+        .wallet-avatar[data-wallet="極易付（UePay）"],
+        .wallet-avatar[data-wallet="极易付（UePay）"],
+        .wallet-avatar[data-wallet="UePay"] { background: #1e5f9e; }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <h1>2026社區消費連環賞</h1>
-        <div class="header-sub">
-            <p>
-                <span class="header-date-line">📅 活動期間：10月9日 - 12月17日（共10週）</span>
-                <span class="header-rule-line">週五至週日領券 · 核銷期至下週四</span>
-            </p>
-            <div class="date-badge">✨ 電子優惠券管理工具 (支援儲存/載入)</div>
+<div class="app">
+
+    <div class="app-header">
+        <h1 data-i18n="appTitle">優惠券管理器</h1>
+        <button class="icon-btn" id="settingsBtn" title="設定">⚙️</button>
+    </div>
+
+    <div class="activity-card">
+        <div class="activity-left">
+            <div class="activity-icon">📅</div>
+            <div class="activity-info">
+                <div class="label" data-i18n="activityDate">活動日期</div>
+                <div class="value">2026/10/09 - 2026/12/17</div>
+            </div>
+        </div>
+        <div class="activity-status" id="activityStatus">載入中</div>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card blue">
+            <div class="stat-head"><span class="dot"></span><span data-i18n="statRemaining">未使用金額</span></div>
+            <div class="stat-num"><span id="statRemaining">0</span><small>MOP</small></div>
+        </div>
+        <div class="stat-card purple">
+            <div class="stat-head"><span class="dot"></span><span data-i18n="statAvailable">可用優惠額度</span></div>
+            <div class="stat-num"><span id="statAvailable">0</span><small>MOP</small></div>
         </div>
     </div>
 
-    <div class="dashboard">
-        <div class="left-panel">
-            <div class="card">
-                <h2>📌 新增抽中電子優惠券</h2>
-
-                <div class="hint-box" style="margin-bottom: 28px;">
-                    🎯 <strong>領券條件：</strong>逢週五至週日，以<strong>實名認證電子錢包</strong>單筆<strong>實付</strong>滿 <strong>50 MOP</strong>（<strong>不含優惠券抵扣</strong>），可獲 <strong>3 次</strong>領獎機會（每週限 3 次，週一清零）。
-                </div>
-
-                <div class="form-group">
-                    <label>📆 領券週 (週五至週日歸屬週)</label>
-                    <select id="weekSelectAdd"></select>
-                </div>
-
-                <div class="form-group">
-                    <label>🏷️ 券種</label>
-                    <select id="couponTypeSelect">
-                        <option value="gov" selected>政府電子優惠券</option>
-                        <option value="merchant_discount">商戶滿減券（滿100減12）</option>
-                        <option value="gift">消費禮遇券（禮品）</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>💰 電子優惠券面額 / 內容</label>
-                    <select id="voucherAmountSelect">
-                        <option value="10">10 MOP</option>
-                        <option value="20">20 MOP</option>
-                        <option value="50" selected>50 MOP</option>
-                        <option value="100">100 MOP</option>
-                        <option value="200">200 MOP</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>👛 電子錢包 (實名認證支付工具)</label>
-                    <select id="walletSelect">
-                        <option value="">-- 請選擇錢包 --</option>
-                    </select>
-                </div>
-                <button class="btn-add-voucher" id="addVoucherBtn">➕ 記錄抽中優惠券</button>
-
-                <div class="hint-box" style="margin-top:16px; margin-bottom:0;">
-                    👴 <strong>長者／殘評證人士：</strong>另享額外 <strong>500 MOP 立減優惠</strong>，拍卡後消費以 5%（半價）扣減。
-                </div>
-            </div>
-        </div>
-
-        <div class="right-panel">
-            <div class="card">
-                <h2>📊 週次統計看板</h2>
-                <div class="week-selector">
-                    <label style="margin:0">選擇週次：</label>
-                    <select id="weekStatsSelect" style="flex:2"></select>
-                </div>
-                <div class="summary-stats">
-                    <div class="stat"><div class="stat-value" id="weekTotalVoucherAmount">0</div><div class="stat-label">本週政府券總金額</div></div>
-                    <div class="stat"><div class="stat-value" id="weekTotalMinSpend">0</div><div class="stat-label">政府券總最低消費額</div></div>
-                    <div class="stat"><div class="stat-value" id="weekTotalSpent">0</div><div class="stat-label">政府券已核銷總消費</div></div>
-                    <div class="stat"><div class="stat-value" id="weekMerchantCount">0</div><div class="stat-label">本週商戶券數量</div></div>
-                </div>
-
-                <div class="deadline-line">
-                    ⏳ 本週核銷截止日：<strong id="weekRedeemDeadline">—</strong>（領取當日至下週四，逾期自動作廢）
-                </div>
-
-                <div class="rule-note">
-                    💡 政府券最低消費額 = 面值 × 3；商戶滿減券滿 100 減 12；消費禮遇券為禮品。
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>📋 所有優惠券記錄</h2>
-                <div class="filter-bar">
-                    <label>🔍 篩選週次：</label>
-                    <select id="weekFilterSelect">
-                        <option value="all">📅 全部週次 (顯示所有記錄)</option>
-                    </select>
-                    <label>🏷️ 券種：</label>
-                    <select id="typeFilterSelect">
-                        <option value="all">全部券種</option>
-                        <option value="gov">政府電子優惠券</option>
-                        <option value="merchant_discount">商戶滿減券</option>
-                        <option value="gift">消費禮遇券</option>
-                    </select>
-                    <span id="filterResultCount" class="filter-badge">0 筆記錄</span>
-                    <span class="scroll-hint" title="表格可向右滑動查看更多">→</span>
-                </div>
-                <div class="table-responsive">
-                    <table id="vouchersTable">
-                        <thead>
-                            <tr>
-                                <th style="min-width:60px">ID</th>
-                                <th style="min-width:140px">歸屬週次</th>
-                                <th style="min-width:120px">券種</th>
-                                <th style="min-width:80px">面額/內容</th>
-                                <th style="min-width:120px">電子錢包</th>
-                                <th style="min-width:100px">最低消費額</th>
-                                <th style="min-width:70px">使用狀態</th>
-                                <th style="min-width:200px">備註</th>
-                                <th style="min-width:100px">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="vouchersTableBody">
-                            <tr><td colspan="9">暫無優惠券資料，請新增抽券記錄</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="table-count-info" id="tableInfoMsg"></div>
-
-                <!-- 廣告位招租 -->
-                <div style="text-align:center; margin-top:24px;">
-                    <a href="mailto:vizaiweb@gmail.com" target="_blank" rel="noopener">
-                        <img src="ad-space.svg" alt="廣告位招租"
-                             style="max-width:100%; height:auto; border-radius:16px;">
-                    </a>
-                </div>
-            </div>
+    <div class="section-title">
+        <h2 data-i18n="myCoupons">我的優惠券</h2>
+        <div class="right-part">
+            <select id="weekViewSelect" class="week-view-select"></select>
+            <span class="count" id="totalCount">0 張</span>
         </div>
     </div>
+    <div id="voucherList"></div>
 
-    <!-- 💾 資料儲存／載入 放在最下方 -->
-    <div class="storage-section">
-        <div class="card">
-            <h2>💾 資料儲存／載入</h2>
-            <p style="margin: 8px 0 12px 0; font-size:0.85rem;">自動保存至瀏覽器本地儲存，亦可手動匯出/匯入備份</p>
-            <button class="btn btn-outline" id="saveDataBtn">💾 手動儲存至瀏覽器</button>
-            <button class="btn btn-outline" id="exportDataBtn">📁 匯出資料 (JSON)</button>
-            <input type="file" id="importFileInput" accept=".json" style="display:none">
-            <button class="btn btn-outline" id="importDataBtn">📂 匯入資料 (JSON)</button>
-            <button class="btn btn-danger" id="resetDataBtn" style="background:#bc6c25;">⚠️ 重置所有數據</button>
+</div>
 
-            <!-- 隱私保障聲明 + 訪問計數 -->
-            <div class="privacy-notice privacy-with-counter">
-                <span class="text">隱私保障：所有資料僅儲存於您的瀏覽器本地，絕不上傳雲端。</span>
-                <span class="counter-line">
-                    <span style="white-space:nowrap;">總訪問次數：<strong id="vercount_value_page_pv">—</strong></span>
-                    <span style="white-space:nowrap;">訪客人數：<strong id="vercount_value_page_uv">—</strong></span>
-                </span>
+<button class="fab" id="fabAddBtn" title="新增優惠券">+</button>
+
+<div class="overlay" id="addOverlay">
+    <div class="sheet" onclick="event.stopPropagation()">
+        <div class="sheet-header">
+            <h3 data-i18n="addTitle">➕ 新增優惠券</h3>
+            <button class="close-btn" data-close="addOverlay">✕</button>
+        </div>
+
+        <div class="field">
+            <label data-i18n="labelWeek">📆 領券週</label>
+            <select id="weekSelectAdd"></select>
+        </div>
+
+        <div class="field">
+            <label data-i18n="labelType">🏷️ 券種</label>
+            <select id="couponTypeSelect">
+                <option value="gov" data-i18n="typeGov">政府電子優惠券</option>
+                <option value="merchant_discount" data-i18n="typeMerchant">商戶滿減券（滿100減12）</option>
+                <option value="gift" data-i18n="typeGift">消費禮遇券（禮品）</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label data-i18n="labelAmount">💰 面額 / 內容</label>
+            <select id="voucherAmountSelect"></select>
+        </div>
+
+        <div class="field">
+            <label data-i18n="labelWallet">👛 電子錢包</label>
+            <select id="walletSelect"></select>
+        </div>
+
+        <button class="submit-btn" id="addVoucherBtn" data-i18n="btnConfirmAdd">確認新增</button>
+    </div>
+</div>
+
+<div class="overlay" id="detailOverlay">
+    <div class="sheet" onclick="event.stopPropagation()">
+        <div class="sheet-header">
+            <h3 data-i18n="detailTitle">優惠券詳情</h3>
+            <button class="close-btn" data-close="detailOverlay">✕</button>
+        </div>
+
+        <div class="detail-amount">
+            <div class="big" id="detailAmount">--</div>
+        </div>
+        <div class="detail-type" id="detailType">--</div>
+
+        <div class="detail-rows">
+            <div class="detail-row">
+                <span class="k" data-i18n="rowWeek">📆 歸屬週次</span>
+                <span class="v" id="detailWeek">--</span>
             </div>
+            <div class="detail-row">
+                <span class="k" data-i18n="rowWallet">👛 電子錢包</span>
+                <span class="v" id="detailWallet">--</span>
+            </div>
+            <div class="detail-row">
+                <span class="k" data-i18n="rowMinSpend">🎯 最低消費額</span>
+                <span class="v" id="detailMinSpend">--</span>
+            </div>
+            <div class="detail-row">
+                <span class="k" data-i18n="rowDeadline">⏳ 核銷截止</span>
+                <span class="v" id="detailDeadline">--</span>
+            </div>
+            <div class="detail-row">
+                <span class="k" data-i18n="rowStatus">📌 使用狀態</span>
+                <span class="v" id="detailStatus">--</span>
+            </div>
+            <div class="detail-row">
+                <span class="k" data-i18n="rowNote">📝 備註</span>
+                <span class="v" id="detailNote">--</span>
+            </div>
+        </div>
+
+        <div class="detail-actions">
+            <button class="submit-btn" id="detailUseBtn" data-i18n="btnUse">✅ 標記已用</button>
+            <button class="submit-btn danger" id="detailDeleteBtn" data-i18n="btnDelete">🗑️ 刪除</button>
+            <button class="submit-btn secondary detail-note-btn" id="detailNoteBtn" data-i18n="btnEditNote">✏️ 編輯備註</button>
         </div>
     </div>
 </div>
 
-<!-- 備註編輯模態框 -->
-<div id="noteModal" class="modal">
-    <div class="modal-content">
-        <h3>✏️ 編輯備註</h3>
-        <textarea id="noteInput" placeholder="輸入備註資訊...&#10;例如：使用店家、消費明細、到期日等"></textarea>
-        <div class="modal-buttons">
-            <button class="btn btn-outline btn-sm" id="closeNoteModal">取消</button>
-            <button class="btn btn-sm" id="saveNoteBtn">儲存</button>
+<div class="overlay" id="noteOverlay">
+    <div class="sheet" onclick="event.stopPropagation()">
+        <div class="sheet-header">
+            <h3 data-i18n="noteTitle">✏️ 編輯備註</h3>
+            <button class="close-btn" data-close="noteOverlay">✕</button>
+        </div>
+        <div class="field">
+            <textarea id="noteInput" data-i18n-ph="notePlaceholder" placeholder="輸入備註資訊..."></textarea>
+        </div>
+        <button class="submit-btn" id="saveNoteBtn" data-i18n="btnSaveNote">儲存備註</button>
+    </div>
+</div>
+
+<div class="overlay" id="settingsOverlay">
+    <div class="sheet" onclick="event.stopPropagation()">
+        <div class="sheet-header">
+            <h3 data-i18n="settingsTitle">⚙️ 設定</h3>
+            <button class="close-btn" data-close="settingsOverlay">✕</button>
+        </div>
+
+        <div class="lang-switcher">
+            <button class="lang-btn" data-lang="zh-HK">繁體中文</button>
+            <button class="lang-btn" data-lang="zh-CN">简体中文</button>
+            <button class="lang-btn" data-lang="en">English</button>
+        </div>
+
+        <div class="settings-list">
+            <button class="settings-item" id="saveDataBtn">
+                <span class="icon">💾</span> <span data-i18n="btnSave">手動儲存至瀏覽器</span>
+            </button>
+            <button class="settings-item" id="exportDataBtn">
+                <span class="icon">📁</span> <span data-i18n="btnExport">匯出資料 (JSON)</span>
+            </button>
+            <button class="settings-item" id="importDataBtn">
+                <span class="icon">📂</span> <span data-i18n="btnImport">匯入資料 (JSON)</span>
+            </button>
+            <input type="file" id="importFileInput" accept=".json">
+            <button class="settings-item danger" id="resetDataBtn">
+                <span class="icon">⚠️</span> <span data-i18n="btnReset">重置所有數據</span>
+            </button>
+        </div>
+
+        <div class="settings-note">
+            <span class="icon">🔒</span>
+            <span data-i18n="privacyNote">隱私保障：所有資料僅儲存於您的瀏覽器本地，絕不上傳雲端。</span>
+        </div>
+
+        <!-- 訪問計數：不參與 i18n，永遠保持原生 -->
+        <div class="settings-note" style="margin-top:8px;">
+            <span class="icon">👀</span>
+            <span>
+                <span data-i18n="visitsLabel">總訪問次數</span>：<strong id="vercount_value_page_pv">—</strong>
+                &nbsp;
+                <span data-i18n="visitorsLabel">訪客人數</span>：<strong id="vercount_value_page_uv">—</strong>
+            </span>
         </div>
     </div>
 </div>
 
 <script>
-    /* ===== 活動設定：2026社區消費連環賞 ===== */
-    const ACTIVITY_START = new Date(2026, 9, 9);
-    const ACTIVITY_END   = new Date(2026, 11, 17);
-    const STORAGE_KEY = 'macau_voucher_2026_round2';
-
-    /* ===== 券種定義 ===== */
-    const COUPON_TYPES = {
-        gov: {
-            label: '政府電子優惠券',
-            badgeClass: 'coupon-type-gov',
-            amounts: [10, 20, 50, 100, 200],
-            defaultAmount: 50,
-            minSpendMultiplier: 3
+    /* ===== 多語言 ===== */
+    const I18N = {
+        'zh-HK': {
+            appTitle: '優惠券管理器',
+            activityDate: '活動日期',
+            statusPending: '即將開始',
+            statusActive: '活動進行中',
+            statusEnded: '已結束',
+            statRemaining: '未使用金額',
+            statAvailable: '可用優惠額度',
+            myCoupons: '我的優惠券',
+            countUnit: '張',
+            emptyTitle: '此週還沒有任何優惠券記錄',
+            emptyHint: '點擊右下角「+」按鈕新增',
+            addTitle: '➕ 新增優惠券',
+            labelWeek: '📆 領券週',
+            labelType: '🏷️ 券種',
+            labelAmount: '💰 面額 / 內容',
+            labelWallet: '👛 電子錢包',
+            typeGov: '政府電子優惠券',
+            typeMerchant: '商戶滿減券（滿100減12）',
+            typeGift: '消費禮遇券（禮品）',
+            walletPlaceholder: '-- 請選擇錢包 --',
+            btnConfirmAdd: '確認新增',
+            detailTitle: '優惠券詳情',
+            rowWeek: '📆 歸屬週次',
+            rowWallet: '👛 電子錢包',
+            rowMinSpend: '🎯 最低消費額',
+            rowDeadline: '⏳ 核銷截止',
+            rowStatus: '📌 使用狀態',
+            rowNote: '📝 備註',
+            statusUnused: '未使用',
+            statusUsed: '已使用',
+            statusExpired: '已過期',
+            statusExpiredLong: '已過期（逾期作廢）',
+            noteEmpty: '（無）',
+            btnUse: '✅ 標記已用',
+            btnDelete: '🗑️ 刪除',
+            btnEditNote: '✏️ 編輯備註',
+            noteTitle: '✏️ 編輯備註',
+            notePlaceholder: '輸入備註資訊...',
+            btnSaveNote: '儲存備註',
+            settingsTitle: '⚙️ 設定',
+            btnSave: '手動儲存至瀏覽器',
+            btnExport: '匯出資料 (JSON)',
+            btnImport: '匯入資料 (JSON)',
+            btnReset: '重置所有數據',
+            privacyNote: '隱私保障：所有資料僅儲存於您的瀏覽器本地，絕不上傳雲端。',
+            visitsLabel: '總訪問次數',
+            visitorsLabel: '訪客人數',
+            alertSelectWeek: '請選擇領券週次',
+            alertSelectAmount: '請選擇有效面額',
+            alertSelectWallet: '請選擇電子錢包',
+            confirmUse: '確定標記為已使用？',
+            confirmDelete: '確定刪除？此操作無法復原。',
+            alertAlreadyUsed: '已經使用過',
+            alertExpired: '此券已過期，無法使用',
+            alertSaved: '已儲存',
+            alertImportSuccess: '匯入成功，共 {n} 筆記錄',
+            alertImportFail: '匯入失敗，JSON解析錯誤',
+            alertImportFormat: '檔案格式不正確',
+            confirmReset: '⚠️ 確定要重置所有資料嗎？此操作無法復原。',
+            weekLabelPrefix: '第',
+            weekLabelSuffix: '週',
+            daysRemaining: '距核銷截止：剩 {n} 日',
+            daysRemainingExpired: '核銷期已過',
+            daysRemainingToday: '今日為核銷最後一日'
         },
-        merchant_discount: {
-            label: '商戶滿減券',
-            badgeClass: 'coupon-type-merchant',
-            amounts: [12],
-            defaultAmount: 12,
-            minSpendMultiplier: 0,
-            fixedMinSpend: 100,
-            displayText: '滿100減12'
+        'zh-CN': {
+            appTitle: '优惠券管理器',
+            activityDate: '活动日期',
+            statusPending: '即将开始',
+            statusActive: '活动进行中',
+            statusEnded: '已结束',
+            statRemaining: '未使用金额',
+            statAvailable: '可用优惠额度',
+            myCoupons: '我的优惠券',
+            countUnit: '张',
+            emptyTitle: '此周还没有任何优惠券记录',
+            emptyHint: '点击右下角「+」按钮新增',
+            addTitle: '➕ 新增优惠券',
+            labelWeek: '📆 领券周',
+            labelType: '🏷️ 券种',
+            labelAmount: '💰 面额 / 内容',
+            labelWallet: '👛 电子钱包',
+            typeGov: '政府电子优惠券',
+            typeMerchant: '商户满减券（满100减12）',
+            typeGift: '消费礼遇券（礼品）',
+            walletPlaceholder: '-- 请选择钱包 --',
+            btnConfirmAdd: '确认新增',
+            detailTitle: '优惠券详情',
+            rowWeek: '📆 归属周次',
+            rowWallet: '👛 电子钱包',
+            rowMinSpend: '🎯 最低消费额',
+            rowDeadline: '⏳ 核销截止',
+            rowStatus: '📌 使用状态',
+            rowNote: '📝 备注',
+            statusUnused: '未使用',
+            statusUsed: '已使用',
+            statusExpired: '已过期',
+            statusExpiredLong: '已过期（逾期作废）',
+            noteEmpty: '（无）',
+            btnUse: '✅ 标记已用',
+            btnDelete: '🗑️ 删除',
+            btnEditNote: '✏️ 编辑备注',
+            noteTitle: '✏️ 编辑备注',
+            notePlaceholder: '输入备注信息...',
+            btnSaveNote: '保存备注',
+            settingsTitle: '⚙️ 设置',
+            btnSave: '手动保存至浏览器',
+            btnExport: '导出数据 (JSON)',
+            btnImport: '导入数据 (JSON)',
+            btnReset: '重置所有数据',
+            privacyNote: '隐私保障：所有数据仅存储于您的浏览器本地，绝不上传云端。',
+            visitsLabel: '总访问次数',
+            visitorsLabel: '访客人数',
+            alertSelectWeek: '请选择领券周次',
+            alertSelectAmount: '请选择有效面额',
+            alertSelectWallet: '请选择电子钱包',
+            confirmUse: '确定标记为已使用？',
+            confirmDelete: '确定删除？此操作无法复原。',
+            alertAlreadyUsed: '已经使用过',
+            alertExpired: '此券已过期，无法使用',
+            alertSaved: '已保存',
+            alertImportSuccess: '导入成功，共 {n} 笔记录',
+            alertImportFail: '导入失败，JSON解析错误',
+            alertImportFormat: '文件格式不正确',
+            confirmReset: '⚠️ 确定要重置所有数据吗？此操作无法复原。',
+            weekLabelPrefix: '第',
+            weekLabelSuffix: '周',
+            daysRemaining: '距核销截止：剩 {n} 日',
+            daysRemainingExpired: '核销期已过',
+            daysRemainingToday: '今日为核销最后一日'
         },
-        gift: {
-            label: '消費禮遇券',
-            badgeClass: 'coupon-type-gift',
-            amounts: [0],
-            defaultAmount: 0,
-            minSpendMultiplier: 0,
-            displayText: '禮品'
+        'en': {
+            appTitle: 'Coupon Manager',
+            activityDate: 'Activity Period',
+            statusPending: 'Upcoming',
+            statusActive: 'Active',
+            statusEnded: 'Ended',
+            statRemaining: 'Unused Amount',
+            statAvailable: 'Available Discount',
+            myCoupons: 'My Coupons',
+            countUnit: '',  // 英文不加量詞
+            emptyTitle: 'No coupons recorded for this week',
+            emptyHint: 'Tap "+" at bottom-right to add',
+            addTitle: '➕ Add Coupon',
+            labelWeek: '📆 Week',
+            labelType: '🏷️ Type',
+            labelAmount: '💰 Amount / Content',
+            labelWallet: '👛 E-Wallet',
+            typeGov: 'Government E-Coupon',
+            typeMerchant: 'Merchant Discount (100-12)',
+            typeGift: 'Consumption Gift',
+            walletPlaceholder: '-- Select wallet --',
+            btnConfirmAdd: 'Confirm',
+            detailTitle: 'Coupon Details',
+            rowWeek: '📆 Week',
+            rowWallet: '👛 E-Wallet',
+            rowMinSpend: '🎯 Min. Spend',
+            rowDeadline: '⏳ Redeem By',
+            rowStatus: '📌 Status',
+            rowNote: '📝 Note',
+            statusUnused: 'Unused',
+            statusUsed: 'Used',
+            statusExpired: 'Expired',
+            statusExpiredLong: 'Expired',
+            noteEmpty: '(none)',
+            btnUse: '✅ Mark Used',
+            btnDelete: '🗑️ Delete',
+            btnEditNote: '✏️ Edit Note',
+            noteTitle: '✏️ Edit Note',
+            notePlaceholder: 'Enter note...',
+            btnSaveNote: 'Save Note',
+            settingsTitle: '⚙️ Settings',
+            btnSave: 'Save to Browser',
+            btnExport: 'Export Data (JSON)',
+            btnImport: 'Import Data (JSON)',
+            btnReset: 'Reset All Data',
+            privacyNote: 'Privacy: All data is stored locally in your browser only.',
+            visitsLabel: 'Page Views',
+            visitorsLabel: 'Visitors',
+            alertSelectWeek: 'Please select week',
+            alertSelectAmount: 'Please select valid amount',
+            alertSelectWallet: 'Please select wallet',
+            confirmUse: 'Mark as used?',
+            confirmDelete: 'Delete? This cannot be undone.',
+            alertAlreadyUsed: 'Already used',
+            alertExpired: 'Expired, cannot use',
+            alertSaved: 'Saved',
+            alertImportSuccess: 'Imported {n} records',
+            alertImportFail: 'Import failed: JSON error',
+            alertImportFormat: 'Invalid file format',
+            confirmReset: '⚠️ Reset all data? This cannot be undone.',
+            weekLabelPrefix: 'Week ',
+            weekLabelSuffix: '',  // 英文不加後綴
+            daysRemaining: 'Redeem within {n} day(s)',
+            daysRemainingExpired: 'Redemption period over',
+            daysRemainingToday: 'Last day to redeem'
         }
     };
 
-    function getCouponTypeInfo(type) {
-        return COUPON_TYPES[type] || COUPON_TYPES.gov;
-    }
+    /* ===== 錢包名稱（各語言） ===== */
+    const WALLET_NAMES = {
+        'zh-HK': ["MPay", "支付寶（澳門）", "澳門中銀手機銀行", "工銀e支付", "豐付寶", "廣發移動支付錢包", "LusoPay", "極易付（UePay）"],
+        'zh-CN': ["MPay", "支付宝（澳门）", "澳门中银手机银行", "工银e支付", "丰付宝", "广发移动支付钱包", "LusoPay", "极易付（UePay）"],
+        'en':    ["MPay", "Alipay (Macau)", "BOC Macau", "ICBC e-Pay", "Fung Fu Bao", "CGB Mobile Wallet", "LusoPay", "UePay"]
+    };
 
-    function getMinSpend(voucher) {
-        const typeInfo = getCouponTypeInfo(voucher.couponType);
-        if (typeInfo.fixedMinSpend !== undefined) {
-            return typeInfo.fixedMinSpend;
+    /* ===== 券種顯示名稱 ===== */
+    const COUPON_TYPE_LABELS = {
+        'zh-HK': { gov: '政府電子優惠券', merchant_discount: '商戶滿減券', gift: '消費禮遇券' },
+        'zh-CN': { gov: '政府电子优惠券', merchant_discount: '商户满减券', gift: '消费礼遇券' },
+        'en':    { gov: 'Government E-Coupon', merchant_discount: 'Merchant Discount', gift: 'Consumption Gift' }
+    };
+
+    /* ===== 活動設定 ===== */
+    const ACTIVITY_START = new Date(2026, 9, 9);
+    const ACTIVITY_END   = new Date(2026, 11, 17);
+    const STORAGE_KEY = 'macau_voucher_2026_round2';
+    const LANG_KEY = 'macau_voucher_2026_lang';
+
+    let currentLang = 'zh-HK';
+
+    /**
+     * 修正 t() 函式：
+     * - 若該語言有定義該 key（即使值是空字串），就回傳該值
+     * - 只有當該 key 在該語言「完全不存在」時，才 fallback 到 zh-HK
+     * 這樣英文的 weekLabelSuffix: '' 與 countUnit: '' 才能正確顯示為空字串
+     */
+    function t(key, params) {
+        const langDict = I18N[currentLang] || {};
+        const fallbackDict = I18N['zh-HK'];
+        let str;
+        if (Object.prototype.hasOwnProperty.call(langDict, key)) {
+            str = langDict[key];
+        } else if (Object.prototype.hasOwnProperty.call(fallbackDict, key)) {
+            str = fallbackDict[key];
+        } else {
+            str = key;
         }
-        return voucher.amount * typeInfo.minSpendMultiplier;
-    }
-
-    function getAmountDisplay(voucher) {
-        const typeInfo = getCouponTypeInfo(voucher.couponType);
-        if (voucher.couponType === 'gift') {
-            return '禮品';
+        if (params) {
+            Object.keys(params).forEach(k => {
+                str = String(str).replace('{' + k + '}', params[k]);
+            });
         }
-        if (voucher.couponType === 'merchant_discount') {
-            return '滿100減12';
-        }
-        return voucher.amount + ' MOP';
+        return str;
     }
 
-    function getMinSpendDisplay(voucher) {
-        const ms = getMinSpend(voucher);
-        if (voucher.couponType === 'gift') return '—';
-        return ms + ' MOP';
+    function getWalletNames() {
+        return WALLET_NAMES[currentLang] || WALLET_NAMES['zh-HK'];
     }
 
+    /* ===== 券種設定 ===== */
+    const COUPON_TYPES = {
+        gov: { defaultAmount: 50, minSpendMultiplier: 3 },
+        merchant_discount: { defaultAmount: 12, minSpendMultiplier: 0, fixedMinSpend: 100 },
+        gift: { defaultAmount: 0, minSpendMultiplier: 0 }
+    };
+
+    /* ===== 全域狀態 ===== */
+    let vouchers = [];
+    let weeksData = [];
+    let nextDisplayId = 1;
+    let currentDetailId = null;
+    let currentViewWeekKey = '';
+
+    /* ===== 週次 ===== */
     function generateWeeksList() {
         let weeks = [];
-        let current = new Date(ACTIVITY_START);
-        let startFriday = new Date(current);
+        let startFriday = new Date(ACTIVITY_START);
         while (startFriday.getDay() !== 5) {
             startFriday.setDate(startFriday.getDate() + 1);
         }
-        let endDate = ACTIVITY_END;
         let weekIndex = 1;
-        while (startFriday <= endDate) {
+        while (startFriday <= ACTIVITY_END) {
             let friday = new Date(startFriday);
             let sunday = new Date(friday);
             sunday.setDate(friday.getDate() + 2);
-            if (sunday > endDate) break;
-
+            if (sunday > ACTIVITY_END) break;
             let redeemDeadline = new Date(sunday);
             redeemDeadline.setDate(sunday.getDate() + 4);
-
-            const weekLabel = `第${weekIndex}週 (${formatDate(friday)} ~ ${formatDate(sunday)})`;
-            const weekKey = `${formatDateKey(friday)}_to_${formatDateKey(sunday)}`;
             weeks.push({
-                key: weekKey,
-                label: weekLabel,
+                key: `${formatDateKey(friday)}_to_${formatDateKey(sunday)}`,
+                index: weekIndex,
                 friday: new Date(friday),
                 sunday: new Date(sunday),
                 redeemDeadline: redeemDeadline
@@ -792,462 +1161,420 @@
         }
         return weeks;
     }
-
-    function formatDate(date) {
-        let y = date.getFullYear();
-        let m = String(date.getMonth() + 1).padStart(2,'0');
-        let d = String(date.getDate()).padStart(2,'0');
-        return `${y}/${m}/${d}`;
+    function formatDate(d) {
+        return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
     }
-    function formatDateKey(date) {
-        let y = date.getFullYear();
-        let m = String(date.getMonth() + 1).padStart(2,'0');
-        let d = String(date.getDate()).padStart(2,'0');
-        return `${y}-${m}-${d}`;
+    function formatDateKey(d) {
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     }
-
+    function formatShortDate(d) {
+        return `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+    }
+    /**
+     * 取得週次短標籤（不顯示年份）
+     * 中文：第X週 (MM/DD ~ MM/DD)
+     * 英文：Week X (MM/DD ~ MM/DD)
+     */
+    function getWeekShortLabel(wk) {
+        const prefix = t('weekLabelPrefix');
+        const suffix = t('weekLabelSuffix');
+        return `${prefix}${wk.index}${suffix} (${formatShortDate(wk.friday)} ~ ${formatShortDate(wk.sunday)})`;
+    }
+    function getWeekFullLabel(wk) {
+        if (!wk) return '';
+        return getWeekShortLabel(wk);
+    }
+    function getWeekLabelByKey(key) {
+        const wk = weeksData.find(w => w.key === key);
+        return wk ? getWeekFullLabel(wk) : key;
+    }
     function getDefaultWeekKey() {
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        if (today < ACTIVITY_START) {
-            return weeksData.length > 0 ? weeksData[0].key : '';
-        }
-        if (today > ACTIVITY_END) {
-            return weeksData.length > 0 ? weeksData[weeksData.length - 1].key : '';
-        }
-
+        today.setHours(0,0,0,0);
+        if (today < ACTIVITY_START) return weeksData[0]?.key || '';
+        if (today > ACTIVITY_END) return weeksData[weeksData.length-1]?.key || '';
         const day = today.getDay();
-
         if (day === 5 || day === 6 || day === 0) {
             for (let wk of weeksData) {
-                if (today >= wk.friday && today <= wk.sunday) {
-                    return wk.key;
-                }
+                if (today >= wk.friday && today <= wk.sunday) return wk.key;
             }
-            return weeksData.length > 0 ? weeksData[weeksData.length - 1].key : '';
+            return weeksData[weeksData.length-1]?.key || '';
         }
-
-        let candidates = weeksData.filter(wk => wk.sunday < today);
-        if (candidates.length > 0) {
-            return candidates[candidates.length - 1].key;
-        }
-        return weeksData.length > 0 ? weeksData[0].key : '';
+        const candidates = weeksData.filter(wk => wk.sunday < today);
+        if (candidates.length > 0) return candidates[candidates.length-1].key;
+        return weeksData[0]?.key || '';
     }
 
-    const WALLETS = [
-        "MPay",
-        "支付寶（澳門）",
-        "澳門中銀手機銀行",
-        "工銀e支付",
-        "豐付寶",
-        "廣發移動支付錢包",
-        "LusoPay",
-        "極易付（UePay）"
-    ];
+    /* ===== 過期判斷 ===== */
+    function isExpired(voucher) {
+        if (voucher.used) return false;
+        const wk = weeksData.find(w => w.key === voucher.weekKey);
+        if (!wk || !wk.redeemDeadline) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return today > wk.redeemDeadline;
+    }
 
-    let vouchers = [];
-    let weeksData = [];
-    let nextDisplayId = 1;
-    let currentWeekFilter = "all";
-    let currentTypeFilter = "all";
-    let editingVoucherId = null;
-
+    /* ===== 資料 ===== */
     function reassignDisplayIds() {
-        let sorted = [...vouchers].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-        for (let i = 0; i < sorted.length; i++) {
-            sorted[i].displayId = i + 1;
-        }
+        const sorted = [...vouchers].sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+        sorted.forEach((v,i) => { v.displayId = i + 1; });
         if (vouchers.length > 0) {
             nextDisplayId = Math.max(...vouchers.map(v => v.displayId)) + 1;
         } else {
             nextDisplayId = 1;
         }
     }
+    function getNewDisplayId() { return nextDisplayId++; }
 
-    function getNewDisplayId() {
-        return nextDisplayId++;
+    function saveToLocalStorage() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            vouchers: vouchers,
+            nextDisplayId: nextDisplayId,
+            version: '4.3',
+            activity: '2026社區消費連環賞',
+            lastUpdated: new Date().toISOString()
+        }));
     }
 
-    function getWeekLabelByKey(key) {
-        let wk = weeksData.find(w => w.key === key);
-        return wk ? wk.label : key;
+    function loadFromLocalStorage() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+            try {
+                const data = JSON.parse(raw);
+                if (data.vouchers && Array.isArray(data.vouchers)) {
+                    vouchers = data.vouchers.filter(v => v && typeof v === 'object').map(v => ({
+                        displayId: v.displayId !== undefined ? v.displayId : 0,
+                        originalId: v.originalId || Date.now() + Math.random(),
+                        weekKey: v.weekKey || (weeksData[0]?.key || ''),
+                        couponType: v.couponType || 'gov',
+                        amount: v.amount || 0,
+                        wallet: v.wallet || 'MPay',
+                        used: v.used === true,
+                        usedTimestamp: v.usedTimestamp || null,
+                        note: v.note || '',
+                        createdAt: v.createdAt || new Date().toISOString()
+                    }));
+                    if (data.nextDisplayId) nextDisplayId = data.nextDisplayId;
+                }
+            } catch(e) { vouchers = []; }
+        }
+        reassignDisplayIds();
     }
 
-    /* ===== 券種下拉動態更新面額 ===== */
-    function updateAmountOptionsByType() {
-        const typeSelect = document.getElementById('couponTypeSelect');
-        const amountSelect = document.getElementById('voucherAmountSelect');
-        if (!typeSelect || !amountSelect) return;
+    function loadLang() {
+        const saved = localStorage.getItem(LANG_KEY);
+        if (saved && I18N[saved]) currentLang = saved;
+    }
+    function saveLang() {
+        localStorage.setItem(LANG_KEY, currentLang);
+    }
 
-        const typeInfo = getCouponTypeInfo(typeSelect.value);
-        amountSelect.innerHTML = '';
+    /* ===== i18n 套用 ===== */
+    function applyI18n() {
+        document.documentElement.lang = currentLang === 'en' ? 'en' : (currentLang === 'zh-CN' ? 'zh-CN' : 'zh-HK');
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.dataset.i18n;
+            el.textContent = t(key);
+        });
+        document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+            el.placeholder = t(el.dataset.i18nPh);
+        });
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === currentLang);
+        });
+    }
 
-        if (typeSelect.value === 'gov') {
-            typeInfo.amounts.forEach(a => {
-                const opt = document.createElement('option');
-                opt.value = a;
-                opt.textContent = a + ' MOP';
-                if (a === typeInfo.defaultAmount) opt.selected = true;
-                amountSelect.appendChild(opt);
+    /* ===== 渲染 ===== */
+    function renderActivityStatus() {
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const el = document.getElementById('activityStatus');
+        if (today < ACTIVITY_START) {
+            el.textContent = t('statusPending');
+            el.className = 'activity-status pending';
+        } else if (today > ACTIVITY_END) {
+            el.textContent = t('statusEnded');
+            el.className = 'activity-status ended';
+        } else {
+            el.textContent = t('statusActive');
+            el.className = 'activity-status';
+        }
+    }
+
+    function renderStats() {
+        const weekKey = currentViewWeekKey || getDefaultWeekKey();
+        let remaining = 0;
+        let available = 0;
+        if (weekKey) {
+            vouchers.forEach(v => {
+                if (v.weekKey === weekKey && (v.couponType || 'gov') === 'gov' && !v.used && !isExpired(v)) {
+                    remaining += v.amount;
+                    available += v.amount * 3;
+                }
             });
-            amountSelect.disabled = false;
-        } else if (typeSelect.value === 'merchant_discount') {
-            const opt = document.createElement('option');
-            opt.value = 12;
-            opt.textContent = '滿100減12';
-            opt.selected = true;
-            amountSelect.appendChild(opt);
-            amountSelect.disabled = true;
-        } else if (typeSelect.value === 'gift') {
-            const opt = document.createElement('option');
-            opt.value = 0;
-            opt.textContent = '禮品（非現金）';
-            opt.selected = true;
-            amountSelect.appendChild(opt);
-            amountSelect.disabled = true;
         }
+        document.getElementById('statRemaining').textContent = remaining.toFixed(0);
+        document.getElementById('statAvailable').textContent = available.toFixed(0);
     }
 
-    function refreshAddWeekSelectOnly() {
-        let weekSelectAdd = document.getElementById('weekSelectAdd');
-        if (!weekSelectAdd) return;
+    function renderVouchers() {
+        const container = document.getElementById('voucherList');
+        const targetWeek = currentViewWeekKey || getDefaultWeekKey();
+        const weekVouchers = vouchers.filter(v => v.weekKey === targetWeek);
 
-        let currentSelectedKey = weekSelectAdd.value;
-        if (!currentSelectedKey) {
-            currentSelectedKey = getDefaultWeekKey();
+        if (weekVouchers.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <span class="emoji">🎫</span>
+                    <p>${t('emptyTitle')}</p>
+                    <p style="margin-top:6px;font-size:0.78rem;">${t('emptyHint')}</p>
+                </div>`;
+            // 英文 countUnit 為空字串，不加空格
+            const unit = t('countUnit');
+            document.getElementById('totalCount').textContent = unit ? `0 ${unit}` : '0';
+            return;
         }
 
-        weekSelectAdd.innerHTML = '';
-        weeksData.forEach(wk => {
-            let option = document.createElement('option');
-            option.value = wk.key;
-            option.textContent = wk.label;
-            weekSelectAdd.appendChild(option);
+        const unit = t('countUnit');
+        document.getElementById('totalCount').textContent = unit ? `${weekVouchers.length} ${unit}` : `${weekVouchers.length}`;
+
+        const walletNames = getWalletNames();
+        const groups = {};
+        walletNames.forEach(w => { groups[w] = []; });
+
+        // 資料儲存的是 zh-HK 原始名稱，需映射為當前語言
+        const originalNames = WALLET_NAMES['zh-HK'];
+        const originalToLocal = {};
+        walletNames.forEach((localName, idx) => {
+            originalToLocal[originalNames[idx]] = localName;
         });
 
-        if (currentSelectedKey && weeksData.some(w => w.key === currentSelectedKey)) {
-            weekSelectAdd.value = currentSelectedKey;
-        } else if (weeksData.length) {
-            weekSelectAdd.value = getDefaultWeekKey() || weeksData[0].key;
-        }
-    }
+        weekVouchers.forEach(v => {
+            const localName = originalToLocal[v.wallet] || v.wallet || walletNames[0];
+            if (!groups[localName]) groups[localName] = [];
+            groups[localName].push(v);
+        });
 
-    function refreshDropdowns() {
-        let weekStatsSelect = document.getElementById('weekStatsSelect');
-        let weekFilterSelect = document.getElementById('weekFilterSelect');
+        let html = '';
+        walletNames.forEach(w => {
+            const list = groups[w] || [];
+            if (list.length === 0) return;
 
-        if(weekStatsSelect) {
-    let oldStatsVal = weekStatsSelect.value;
-    weekStatsSelect.innerHTML = '';
-    weeksData.forEach(wk => {
-        let option = document.createElement('option');
-        option.value = wk.key;
-        option.textContent = wk.label;
-        weekStatsSelect.appendChild(option);
-    });
-    // 新增「活動期間」總計選項
-    let totalOption = document.createElement('option');
-    totalOption.value = 'all_total';
-    totalOption.textContent = '活動期間：2026/10/09 ~ 2026/12/13（總計）';
-    weekStatsSelect.appendChild(totalOption);
+            const usedCount = list.filter(v => v.used).length;
+            html += `
+                <div class="wallet-group">
+                    <div class="wallet-header">
+                        <div class="wallet-avatar" data-wallet="${escapeAttr(w)}">${getWalletShort(w)}</div>
+                        <div class="wallet-name">${escapeHtml(w)}</div>
+                        <div class="wallet-meta">${usedCount}/${list.length}</div>
+                    </div>
+                    <div class="voucher-grid">`;
 
-    if(oldStatsVal && (oldStatsVal === 'all_total' || weeksData.some(w => w.key === oldStatsVal))) {
-        weekStatsSelect.value = oldStatsVal;
-    } else if(weeksData.length) {
-        weekStatsSelect.value = getDefaultWeekKey() || weeksData[0].key;
-    }
-    weekStatsSelect.dispatchEvent(new Event('change'));
-}
-
-        if(weekFilterSelect) {
-            let currentFilterValue = weekFilterSelect.value;
-            weekFilterSelect.innerHTML = '<option value="all">📅 全部週次 (顯示所有記錄)</option>';
-            weeksData.forEach(wk => {
-                let option = document.createElement('option');
-                option.value = wk.key;
-                option.textContent = wk.label;
-                weekFilterSelect.appendChild(option);
+            const sorted = [...list].sort((a,b) => {
+                if (a.used !== b.used) return a.used ? 1 : -1;
+                return a.displayId - b.displayId;
             });
-            if(currentFilterValue !== "all" && weeksData.some(w => w.key === currentFilterValue)) {
-                weekFilterSelect.value = currentFilterValue;
-                currentWeekFilter = currentFilterValue;
+
+            sorted.forEach(v => {
+                const expired = isExpired(v);
+                const typeClass = v.couponType === 'merchant_discount' ? 'merchant'
+                                : v.couponType === 'gift' ? 'gift' : '';
+                const stateClass = v.used ? 'used' : (expired ? 'expired' : '');
+                let amountHtml = '';
+                if (v.couponType === 'gift') {
+                    amountHtml = `<div class="v-amount">${escapeHtml(getShortTypeLabel('gift'))}</div>`;
+                } else if (v.couponType === 'merchant_discount') {
+                    amountHtml = `<div class="v-amount">${escapeHtml(getShortTypeLabel('merchant_discount'))}</div>`;
+                } else {
+                    amountHtml = `<div class="v-amount">$${v.amount}</div>`;
+                }
+                let statusText = t('statusUnused');
+                if (v.used) statusText = t('statusUsed');
+                else if (expired) statusText = t('statusExpired');
+
+                html += `
+                    <div class="voucher-card ${typeClass} ${stateClass}" data-id="${v.displayId}">
+                        <div class="v-id">#${String(v.displayId).padStart(3,'0')}</div>
+                        ${amountHtml}
+                        <div class="v-status">${statusText}</div>
+                    </div>`;
+            });
+
+            html += `</div></div>`;
+        });
+
+        // 剩餘天數提示（只顯示所選週次）
+        const wk = weeksData.find(w => w.key === targetWeek);
+        if (wk && wk.redeemDeadline) {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const deadline = new Date(wk.redeemDeadline);
+            deadline.setHours(0,0,0,0);
+            const diff = Math.round((deadline - today) / (1000 * 60 * 60 * 24));
+            let text = '';
+            let urgent = false;
+            if (diff < 0) {
+                text = t('daysRemainingExpired');
+                urgent = true;
+            } else if (diff === 0) {
+                text = t('daysRemainingToday');
+                urgent = true;
             } else {
-                weekFilterSelect.value = "all";
-                currentWeekFilter = "all";
+                text = t('daysRemaining', { n: diff });
+                urgent = diff <= 2;
             }
+            html += `<div class="days-remaining ${urgent ? 'urgent' : ''}">⏳ ${text}</div>`;
         }
 
-        refreshAddWeekSelectOnly();
+        container.innerHTML = html;
+
+        container.querySelectorAll('.voucher-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const id = parseInt(card.dataset.id);
+                openDetail(id);
+            });
+        });
     }
 
-    function getFilteredVouchers() {
-        let result = [...vouchers];
-        if (currentWeekFilter !== "all") {
-            result = result.filter(v => v.weekKey === currentWeekFilter);
+    function getShortTypeLabel(type) {
+        if (type === 'gift') {
+            return currentLang === 'en' ? 'Gift' : (currentLang === 'zh-CN' ? '礼品' : '禮品');
         }
-        if (currentTypeFilter !== "all") {
-            result = result.filter(v => (v.couponType || 'gov') === currentTypeFilter);
+        if (type === 'merchant_discount') {
+            return currentLang === 'en' ? '100-12' : '滿100減12';
         }
-        return result;
+        return '';
+    }
+
+    function getWalletShort(w) {
+        if (w.includes('MPay')) return 'MP';
+        if (w.includes('支付寶') || w.includes('支付宝') || w.includes('Alipay')) return 'AP';
+        if (w.includes('中銀') || w.includes('中银') || w.includes('BOC')) return 'BOC';
+        if (w.includes('工銀') || w.includes('工银') || w.includes('ICBC')) return 'ICBC';
+        if (w.includes('豐付') || w.includes('丰付') || w.includes('Fung')) return 'FBB';
+        if (w.includes('廣發') || w.includes('广发') || w.includes('CGB')) return 'GF';
+        if (w.includes('Luso')) return 'LP';
+        if (w.includes('極易') || w.includes('极易') || w.includes('UePay')) return 'UE';
+        return '💳';
+    }
+
+    function escapeHtml(s) {
+        if (!s) return '';
+        return String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+    }
+    function escapeAttr(s) {
+        return escapeHtml(s).replace(/"/g, '&quot;');
+    }
+
+    /* ===== 週次下拉 ===== */
+    function refreshWeekViewSelect() {
+        const sel = document.getElementById('weekViewSelect');
+        if (!sel) return;
+        const prev = sel.value;
+        sel.innerHTML = '';
+        weeksData.forEach(wk => {
+            const opt = document.createElement('option');
+            opt.value = wk.key;
+            opt.textContent = getWeekShortLabel(wk);
+            sel.appendChild(opt);
+        });
+        if (prev && weeksData.some(w => w.key === prev)) {
+            sel.value = prev;
+            currentViewWeekKey = prev;
+        } else {
+            const def = getDefaultWeekKey() || weeksData[0]?.key || '';
+            sel.value = def;
+            currentViewWeekKey = def;
+        }
     }
 
     function renderAll() {
-        renderVouchersTable();
-        updateStatsBySelectedWeek();
-        refreshDropdowns();
+        renderActivityStatus();
+        refreshWeekViewSelect();
+        renderStats();
+        renderVouchers();
     }
 
-    function deleteVoucher(displayId) {
-        if (confirm(`確定要刪除 ID ${String(displayId).padStart(4,'0')} 的優惠券嗎？此操作無法復原。`)) {
-            const index = vouchers.findIndex(v => v.displayId === displayId);
-            if (index !== -1) {
-                vouchers.splice(index, 1);
-                reassignDisplayIds();
-                saveToLocalStorage();
-                renderAll();
-                alert('已成功刪除優惠券');
-            } else {
-                alert('找不到該筆資料');
-            }
-        }
-    }
-
-    function markVoucherAsUsed(displayId) {
-        let voucher = vouchers.find(v => v.displayId === displayId);
-        if(!voucher) {
-            alert('找不到優惠券');
-            return;
-        }
-        if(voucher.used) {
-            alert('優惠券已經核銷過！');
-            return;
-        }
-        voucher.used = true;
-        voucher.usedTimestamp = new Date().toISOString();
-        saveToLocalStorage();
-        renderAll();
-        alert(`優惠券 ID ${String(displayId).padStart(4,'0')} 已標記為已用！`);
-    }
-
-    function openNoteModal(displayId) {
-        editingVoucherId = displayId;
-        let voucher = vouchers.find(v => v.displayId === displayId);
-        let noteTextarea = document.getElementById('noteInput');
-        if (voucher && voucher.note) {
-            noteTextarea.value = voucher.note;
-        } else {
-            noteTextarea.value = '';
-        }
-        document.getElementById('noteModal').style.display = 'flex';
-    }
-
-    function saveNote() {
-        if (editingVoucherId !== null) {
-            let voucher = vouchers.find(v => v.displayId === editingVoucherId);
-            if (voucher) {
-                let noteText = document.getElementById('noteInput').value;
-                voucher.note = noteText;
-                saveToLocalStorage();
-                renderAll();
-                closeNoteModal();
-                alert('備註已儲存');
-            }
-        }
-    }
-
-    function closeNoteModal() {
-        document.getElementById('noteModal').style.display = 'none';
-        editingVoucherId = null;
-    }
-
-    function renderVouchersTable() {
-        let tbody = document.getElementById('vouchersTableBody');
-        let filterResultCountSpan = document.getElementById('filterResultCount');
-        let tableInfoMsg = document.getElementById('tableInfoMsg');
-
-        if(!tbody) return;
-
-        const filteredVouchers = getFilteredVouchers();
-        const totalFiltered = filteredVouchers.length;
-
-        if(filteredVouchers.length === 0) {
-            if (currentWeekFilter === "all" && currentTypeFilter === "all") {
-                tbody.innerHTML = '<tr><td colspan="9">暫無優惠券資料，請新增抽券記錄</td></tr>';
-                if(filterResultCountSpan) filterResultCountSpan.innerText = `0 筆記錄`;
-                if(tableInfoMsg) tableInfoMsg.innerText = '';
-            } else {
-                let msg = '目前篩選：';
-                if (currentWeekFilter !== "all") msg += getWeekLabelByKey(currentWeekFilter);
-                if (currentTypeFilter !== "all") msg += (currentWeekFilter !== "all" ? ' / ' : '') + getCouponTypeInfo(currentTypeFilter).label;
-                tbody.innerHTML = `<tr><td colspan="9">${msg}，暫無優惠券記錄</td></tr>`;
-                if(filterResultCountSpan) filterResultCountSpan.innerText = `0 筆記錄`;
-                if(tableInfoMsg) tableInfoMsg.innerText = `${msg}，共 0 筆`;
-            }
-            return;
-        }
-
-        let sorted = [...filteredVouchers].sort((a,b) => a.displayId - b.displayId);
-        tbody.innerHTML = '';
-        sorted.forEach(v => {
-            let row = tbody.insertRow();
-            let idFormatted = String(v.displayId).padStart(4, '0');
-            row.insertCell(0).innerHTML = `<span style="white-space:nowrap">${idFormatted}</span>`;
-            row.insertCell(1).innerHTML = `<span style="white-space:normal">${escapeHtml(getWeekLabelByKey(v.weekKey))}</span>`;
-
-            const typeInfo = getCouponTypeInfo(v.couponType);
-            row.insertCell(2).innerHTML = `<span class="coupon-type-badge ${typeInfo.badgeClass}">${escapeHtml(typeInfo.label)}</span>`;
-
-            row.insertCell(3).innerHTML = `<span style="white-space:nowrap">${escapeHtml(getAmountDisplay(v))}</span>`;
-            row.insertCell(4).innerHTML = `<span style="white-space:nowrap">${escapeHtml(v.wallet)}</span>`;
-            row.insertCell(5).innerHTML = `<span style="white-space:nowrap">${escapeHtml(getMinSpendDisplay(v))}</span>`;
-
-            let statusCell = row.insertCell(6);
-            if(v.used) {
-                statusCell.innerHTML = '<span class="used-badge used-true" style="white-space:nowrap">已用</span>';
-            } else {
-                statusCell.innerHTML = '<span class="used-badge" style="white-space:nowrap">未用</span>';
-            }
-
-            let noteCell = row.insertCell(7);
-            if(v.note && v.note.trim() !== '') {
-                noteCell.innerHTML = `<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                        <button class="edit-note-btn" onclick="openNoteModal(${v.displayId})">編輯</button>
-                                        <span class="note-text-display">${escapeHtml(v.note)}</span>
-                                      </div>`;
-            } else {
-                noteCell.innerHTML = `<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                        <button class="edit-note-btn" onclick="openNoteModal(${v.displayId})">新增備註</button>
-                                        <span class="note-text-display note-placeholder">點擊「新增備註」</span>
-                                      </div>`;
-            }
-
-            let actionCell = row.insertCell(8);
-            let actionDiv = document.createElement('div');
-            actionDiv.style.display = 'flex';
-            actionDiv.style.gap = '6px';
-            actionDiv.style.alignItems = 'center';
-            actionDiv.style.flexWrap = 'wrap';
-
-            if(!v.used) {
-                let useBtn = document.createElement('button');
-                useBtn.innerText = '核銷';
-                useBtn.className = 'use-btn';
-                useBtn.onclick = (e) => {
-                    e.preventDefault();
-                    markVoucherAsUsed(v.displayId);
-                };
-                actionDiv.appendChild(useBtn);
-            }
-            let delBtn = document.createElement('button');
-            delBtn.innerText = '刪除';
-            delBtn.className = 'delete-btn';
-            delBtn.onclick = (e) => {
-                e.preventDefault();
-                deleteVoucher(v.displayId);
-            };
-            actionDiv.appendChild(delBtn);
-            actionCell.appendChild(actionDiv);
+    /* ===== 新增表單 ===== */
+    function refreshWeekSelect() {
+        const sel = document.getElementById('weekSelectAdd');
+        const prev = sel.value;
+        sel.innerHTML = '';
+        weeksData.forEach(wk => {
+            const opt = document.createElement('option');
+            opt.value = wk.key;
+            opt.textContent = getWeekFullLabel(wk);
+            sel.appendChild(opt);
         });
-
-        if(filterResultCountSpan) {
-            filterResultCountSpan.innerText = `${totalFiltered} 筆記錄`;
-        }
-        if(tableInfoMsg) {
-            let msg = '';
-            if (currentWeekFilter === "all" && currentTypeFilter === "all") {
-                msg = `📋 顯示全部 ${totalFiltered} 筆優惠券記錄`;
-            } else {
-                msg = '🔍 篩選：';
-                if (currentWeekFilter !== "all") msg += getWeekLabelByKey(currentWeekFilter);
-                if (currentTypeFilter !== "all") msg += (currentWeekFilter !== "all" ? ' / ' : '') + getCouponTypeInfo(currentTypeFilter).label;
-                msg += `，共 ${totalFiltered} 筆記錄`;
-            }
-            tableInfoMsg.innerText = msg;
+        if (prev && weeksData.some(w => w.key === prev)) {
+            sel.value = prev;
+        } else {
+            sel.value = getDefaultWeekKey() || weeksData[0]?.key || '';
         }
     }
 
-    function escapeHtml(text) {
-        if (!text) return '';
-        return String(text).replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
+    function updateAmountOptionsByType() {
+        const typeSelect = document.getElementById('couponTypeSelect');
+        const amountSelect = document.getElementById('voucherAmountSelect');
+        const type = typeSelect.value;
+        amountSelect.innerHTML = '';
+        if (type === 'gov') {
+            [10, 20, 50, 100, 200].forEach(a => {
+                const o = document.createElement('option');
+                o.value = a;
+                o.textContent = a + ' MOP';
+                if (a === 50) o.selected = true;
+                amountSelect.appendChild(o);
+            });
+            amountSelect.disabled = false;
+        } else if (type === 'merchant_discount') {
+            const o = document.createElement('option');
+            o.value = 12;
+            o.textContent = currentLang === 'en' ? '100-12' : '滿100減12';
+            o.selected = true;
+            amountSelect.appendChild(o);
+            amountSelect.disabled = true;
+        } else {
+            const o = document.createElement('option');
+            o.value = 0;
+            o.textContent = currentLang === 'en' ? 'Gift' : (currentLang === 'zh-CN' ? '礼品（非现金）' : '禮品（非現金）');
+            o.selected = true;
+            amountSelect.appendChild(o);
+            amountSelect.disabled = true;
+        }
+    }
+
+    function initWalletOptions() {
+        const sel = document.getElementById('walletSelect');
+        sel.innerHTML = `<option value="">${t('walletPlaceholder')}</option>`;
+        const walletNames = getWalletNames();
+        const originalNames = WALLET_NAMES['zh-HK'];
+        walletNames.forEach((w, idx) => {
+            const o = document.createElement('option');
+            // value 永遠用原始（zh-HK）名稱，方便內部儲存統一
+            o.value = originalNames[idx] || w;
+            o.textContent = w;
+            sel.appendChild(o);
         });
     }
-
-    function getVouchersByWeek(weekKey) {
-        return vouchers.filter(v => v.weekKey === weekKey);
-    }
-
-   function updateStatsBySelectedWeek() {
-    let weekSelect = document.getElementById('weekStatsSelect');
-    if(!weekSelect || !weekSelect.value) return;
-    let weekKey = weekSelect.value;
-
-    // 「活動期間」時，取全部記錄；否則只取該週
-    let weekVouchers = (weekKey === 'all_total') ? [...vouchers] : getVouchersByWeek(weekKey);
-
-    // 政府券與商戶券分開
-    let govVouchers = weekVouchers.filter(v => (v.couponType || 'gov') === 'gov');
-    let merchantVouchers = weekVouchers.filter(v => (v.couponType || 'gov') !== 'gov');
-
-    let totalAmount = govVouchers.reduce((sum, v) => sum + v.amount, 0);
-    let totalMinSpend = govVouchers.reduce((sum, v) => sum + (v.amount * 3), 0);
-    let usedGovVouchers = govVouchers.filter(v => v.used);
-    let totalSpent = usedGovVouchers.reduce((sum, v) => sum + (v.amount * 3), 0);
-    let merchantCount = merchantVouchers.length;
-
-    document.getElementById('weekTotalVoucherAmount').innerText = totalAmount.toFixed(0);
-    document.getElementById('weekTotalMinSpend').innerText = totalMinSpend.toFixed(0);
-    document.getElementById('weekTotalSpent').innerText = totalSpent.toFixed(0);
-    document.getElementById('weekMerchantCount').innerText = merchantCount;
-
-    // 核銷截止日
-    let deadlineEl = document.getElementById('weekRedeemDeadline');
-    if (deadlineEl) {
-        if (weekKey === 'all_total') {
-            deadlineEl.innerText = '—';
-        } else {
-            let wk = weeksData.find(w => w.key === weekKey);
-            deadlineEl.innerText = (wk && wk.redeemDeadline)
-                ? formatDate(wk.redeemDeadline) + '（週四）'
-                : '—';
-        }
-    }
-}
 
     function addVoucher() {
-        let weekSelect = document.getElementById('weekSelectAdd');
-        let weekKey = weekSelect.value;
-        if(!weekKey) {
-            alert('請選擇領券週次');
-            return;
-        }
+        const weekKey = document.getElementById('weekSelectAdd').value;
+        if (!weekKey) { alert(t('alertSelectWeek')); return; }
 
-        let typeSelect = document.getElementById('couponTypeSelect');
-        let couponType = typeSelect.value;
-
-        let amountSelect = document.getElementById('voucherAmountSelect');
-        let amount = parseFloat(amountSelect.value);
+        const couponType = document.getElementById('couponTypeSelect').value;
+        let amount = parseFloat(document.getElementById('voucherAmountSelect').value);
         if (couponType !== 'gift' && (isNaN(amount) || amount <= 0)) {
-            alert('請選擇有效的面額');
-            return;
+            alert(t('alertSelectAmount')); return;
         }
-        if (couponType === 'gift') {
-            amount = 0;
-        }
+        if (couponType === 'gift') amount = 0;
 
-        let wallet = document.getElementById('walletSelect').value;
-        if(!wallet) {
-            alert('請選擇電子錢包');
-            return;
-        }
+        const wallet = document.getElementById('walletSelect').value;
+        if (!wallet) { alert(t('alertSelectWallet')); return; }
 
-        let newDisplayId = getNewDisplayId();
-        let newVoucher = {
-            displayId: newDisplayId,
+        const newVoucher = {
+            displayId: getNewDisplayId(),
             originalId: Date.now() + Math.floor(Math.random() * 10000),
             weekKey: weekKey,
             couponType: couponType,
@@ -1261,75 +1588,136 @@
         vouchers.push(newVoucher);
         reassignDisplayIds();
         saveToLocalStorage();
+        currentViewWeekKey = weekKey;
         renderAll();
-
-        let typeLabel = getCouponTypeInfo(couponType).label;
-        let displayAmount = getAmountDisplay(newVoucher);
-        alert(`已成功記錄 ${typeLabel}（${displayAmount}）(錢包:${wallet})，ID: ${String(newVoucher.displayId).padStart(4,'0')}`);
+        closeOverlay('addOverlay');
     }
 
-    function saveToLocalStorage() {
-        let dataToStore = {
-            vouchers: vouchers,
-            nextDisplayId: nextDisplayId,
-            version: '3.1',
-            activity: '2026社區消費連環賞',
-            lastUpdated: new Date().toISOString()
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToStore));
-    }
+    /* ===== 詳情彈窗 ===== */
+    function openDetail(displayId) {
+        const v = vouchers.find(x => x.displayId === displayId);
+        if (!v) return;
+        currentDetailId = displayId;
 
-    function loadFromLocalStorage() {
-        let raw = localStorage.getItem(STORAGE_KEY);
-        if(raw) {
-            try {
-                let data = JSON.parse(raw);
-                if(data.vouchers && Array.isArray(data.vouchers)) {
-                    vouchers = data.vouchers.filter(v => v && typeof v === 'object').map(v => {
-                        return {
-                            displayId: v.displayId !== undefined ? v.displayId : 0,
-                            originalId: v.originalId || Date.now() + Math.random(),
-                            weekKey: v.weekKey || (weeksData[0]?.key || ''),
-                            couponType: v.couponType || 'gov',
-                            amount: v.amount || 0,
-                            wallet: v.wallet || WALLETS[0],
-                            used: v.used === true,
-                            usedTimestamp: v.usedTimestamp || null,
-                            note: v.note || '',
-                            createdAt: v.createdAt || new Date().toISOString()
-                        };
-                    });
-                    if (data.nextDisplayId) nextDisplayId = data.nextDisplayId;
-                    else reassignDisplayIds();
-                } else {
-                    vouchers = [];
-                    reassignDisplayIds();
-                }
-            } catch(e) {
-                vouchers = [];
-                reassignDisplayIds();
-            }
+        const labels = COUPON_TYPE_LABELS[currentLang] || COUPON_TYPE_LABELS['zh-HK'];
+        const amountEl = document.getElementById('detailAmount');
+        if (v.couponType === 'gift') {
+            amountEl.textContent = getShortTypeLabel('gift');
+            amountEl.className = 'big gift';
+        } else if (v.couponType === 'merchant_discount') {
+            amountEl.textContent = getShortTypeLabel('merchant_discount');
+            amountEl.className = 'big merchant';
         } else {
-            vouchers = [];
-            reassignDisplayIds();
+            amountEl.innerHTML = `$${v.amount}<small>MOP</small>`;
+            amountEl.className = 'big';
         }
-        reassignDisplayIds();
-        renderAll();
+
+        document.getElementById('detailType').textContent = labels[v.couponType] || labels.gov;
+
+        const originalNames = WALLET_NAMES['zh-HK'];
+        const walletNames = getWalletNames();
+        const idx = originalNames.indexOf(v.wallet);
+        const displayWallet = idx >= 0 ? walletNames[idx] : v.wallet;
+        document.getElementById('detailWallet').textContent = displayWallet;
+
+        document.getElementById('detailWeek').textContent = getWeekLabelByKey(v.weekKey);
+
+        let minSpendText = '';
+        if (v.couponType === 'gift') minSpendText = '—';
+        else if (v.couponType === 'merchant_discount') minSpendText = '100 MOP';
+        else minSpendText = (v.amount * 3) + ' MOP';
+        document.getElementById('detailMinSpend').textContent = minSpendText;
+
+        const wk = weeksData.find(w => w.key === v.weekKey);
+        if (wk && wk.redeemDeadline) {
+            document.getElementById('detailDeadline').textContent = formatDate(wk.redeemDeadline);
+        } else {
+            document.getElementById('detailDeadline').textContent = '—';
+        }
+
+        const expired = isExpired(v);
+        let statusText = t('statusUnused');
+        if (v.used) statusText = t('statusUsed');
+        else if (expired) statusText = t('statusExpiredLong');
+        document.getElementById('detailStatus').textContent = statusText;
+
+        document.getElementById('detailNote').textContent = v.note || t('noteEmpty');
+
+        const useBtn = document.getElementById('detailUseBtn');
+        useBtn.style.display = (v.used || expired) ? 'none' : 'block';
+
+        document.getElementById('detailOverlay').classList.add('open');
     }
 
+    function markCurrentAsUsed() {
+        const v = vouchers.find(x => x.displayId === currentDetailId);
+        if (!v) return;
+        if (v.used) { alert(t('alertAlreadyUsed')); return; }
+        if (isExpired(v)) { alert(t('alertExpired')); return; }
+        if (!confirm(t('confirmUse'))) return;
+        v.used = true;
+        v.usedTimestamp = new Date().toISOString();
+        saveToLocalStorage();
+        renderAll();
+        openDetail(currentDetailId);
+    }
+
+    function deleteCurrent() {
+        const v = vouchers.find(x => x.displayId === currentDetailId);
+        if (!v) return;
+        if (!confirm(t('confirmDelete'))) return;
+        vouchers = vouchers.filter(x => x.displayId !== currentDetailId);
+        reassignDisplayIds();
+        saveToLocalStorage();
+        renderAll();
+        closeOverlay('detailOverlay');
+    }
+
+    /* ===== 備註編輯 ===== */
+    function openNoteEditor() {
+        const v = vouchers.find(x => x.displayId === currentDetailId);
+        if (!v) return;
+        document.getElementById('noteInput').value = v.note || '';
+        closeOverlay('detailOverlay');
+        document.getElementById('noteOverlay').classList.add('open');
+    }
+
+    function saveNote() {
+        const v = vouchers.find(x => x.displayId === currentDetailId);
+        if (!v) return;
+        v.note = document.getElementById('noteInput').value;
+        saveToLocalStorage();
+        renderAll();
+        closeOverlay('noteOverlay');
+        openDetail(currentDetailId);
+    }
+
+    /* ===== 彈窗控制 ===== */
+    function closeOverlay(id) {
+        document.getElementById(id).classList.remove('open');
+    }
+    document.querySelectorAll('[data-close]').forEach(btn => {
+        btn.addEventListener('click', () => closeOverlay(btn.dataset.close));
+    });
+    document.querySelectorAll('.overlay').forEach(ov => {
+        ov.addEventListener('click', e => {
+            if (e.target === ov) ov.classList.remove('open');
+        });
+    });
+
+    /* ===== 資料匯出/匯入 ===== */
     function exportData() {
-        let exportObj = {
+        const data = {
             vouchers: vouchers,
             nextDisplayId: nextDisplayId,
             exportDate: new Date().toISOString(),
-            description: "2026社區消費連環賞優惠券記錄"
+            description: '2026社區消費連環賞優惠券記錄'
         };
-        let dataStr = JSON.stringify(exportObj, null, 2);
-        let blob = new Blob([dataStr], {type: "application/json"});
-        let url = URL.createObjectURL(blob);
-        let a = document.createElement('a');
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
         a.href = url;
-        a.download = `macau_vouchers_2026_round2_${new Date().toISOString().slice(0,19)}.json`;
+        a.download = `macau_vouchers_${new Date().toISOString().slice(0,10)}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -1337,136 +1725,119 @@
     }
 
     function importData(file) {
-        let reader = new FileReader();
-        reader.onload = function(e) {
+        const reader = new FileReader();
+        reader.onload = e => {
             try {
-                let imported = JSON.parse(e.target.result);
-                if(imported.vouchers && Array.isArray(imported.vouchers)) {
-                    vouchers = imported.vouchers.map(v => ({
-                        displayId: v.displayId !== undefined ? v.displayId : 0,
-                        originalId: v.originalId || Date.now() + Math.random(),
-                        weekKey: v.weekKey,
-                        couponType: v.couponType || 'gov',
-                        amount: v.amount || 0,
-                        wallet: v.wallet,
-                        used: v.used || false,
-                        usedTimestamp: v.usedTimestamp || null,
-                        note: v.note || '',
-                        createdAt: v.createdAt || new Date().toISOString()
-                    }));
-                    if (imported.nextDisplayId) nextDisplayId = imported.nextDisplayId;
-                    reassignDisplayIds();
-                    saveToLocalStorage();
-
-                    currentWeekFilter = "all";
-                    currentTypeFilter = "all";
-                    let weekFilterSelect = document.getElementById('weekFilterSelect');
-                    if (weekFilterSelect) weekFilterSelect.value = "all";
-                    let typeFilterSelect = document.getElementById('typeFilterSelect');
-                    if (typeFilterSelect) typeFilterSelect.value = "all";
-
-                    let weekStatsSelect = document.getElementById('weekStatsSelect');
-                    if (weekStatsSelect) {
-                        weekStatsSelect.value = getDefaultWeekKey() || weeksData[0].key;
-                    }
-
-                    renderAll();
-                    alert(`匯入成功，共 ${vouchers.length} 筆優惠券記錄`);
-                } else {
-                    alert('檔案格式不正確，缺少 vouchers 陣列');
+                const imported = JSON.parse(e.target.result);
+                if (!imported.vouchers || !Array.isArray(imported.vouchers)) {
+                    alert(t('alertImportFormat'));
+                    return;
                 }
+                vouchers = imported.vouchers.map(v => ({
+                    displayId: v.displayId !== undefined ? v.displayId : 0,
+                    originalId: v.originalId || Date.now() + Math.random(),
+                    weekKey: v.weekKey,
+                    couponType: v.couponType || 'gov',
+                    amount: v.amount || 0,
+                    wallet: v.wallet,
+                    used: v.used || false,
+                    usedTimestamp: v.usedTimestamp || null,
+                    note: v.note || '',
+                    createdAt: v.createdAt || new Date().toISOString()
+                }));
+                if (imported.nextDisplayId) nextDisplayId = imported.nextDisplayId;
+                reassignDisplayIds();
+                saveToLocalStorage();
+                renderAll();
+                closeOverlay('settingsOverlay');
+                alert(t('alertImportSuccess', { n: vouchers.length }));
             } catch(err) {
-                alert('匯入失敗，JSON解析錯誤');
+                alert(t('alertImportFail'));
             }
         };
         reader.readAsText(file);
     }
 
-    function resetAllData() {
-        if(confirm('⚠️ 確定要重置所有優惠券資料嗎？此操作無法復原。')) {
-            vouchers = [];
-            reassignDisplayIds();
-            saveToLocalStorage();
-            renderAll();
-            alert('所有數據已重置');
-        }
+    function resetAll() {
+        if (!confirm(t('confirmReset'))) return;
+        vouchers = [];
+        reassignDisplayIds();
+        saveToLocalStorage();
+        renderAll();
+        closeOverlay('settingsOverlay');
     }
 
-    function initWalletSelect() {
-        let walletSelect = document.getElementById('walletSelect');
-        if(walletSelect) {
-            walletSelect.innerHTML = '<option value="">-- 請選擇錢包 --</option>';
-            WALLETS.forEach(w => {
-                let opt = document.createElement('option');
-                opt.value = w;
-                opt.textContent = w;
-                walletSelect.appendChild(opt);
-            });
-        }
+    /* ===== 語言切換 ===== */
+    function switchLang(lang) {
+        if (!I18N[lang]) return;
+        currentLang = lang;
+        saveLang();
+        applyI18n();
+        initWalletOptions();
+        updateAmountOptionsByType();
+        refreshWeekViewSelect();
+        refreshWeekSelect();
+        renderAll();
     }
 
-    function bindFilterEvent() {
-        let weekFilterSelect = document.getElementById('weekFilterSelect');
-        if(weekFilterSelect) {
-            weekFilterSelect.addEventListener('change', (e) => {
-                currentWeekFilter = e.target.value;
-                renderVouchersTable();
-            });
-        }
-        let typeFilterSelect = document.getElementById('typeFilterSelect');
-        if(typeFilterSelect) {
-            typeFilterSelect.addEventListener('change', (e) => {
-                currentTypeFilter = e.target.value;
-                renderVouchersTable();
-            });
-        }
-    }
-
+    /* ===== 綁定事件 ===== */
     function bindEvents() {
-        let weekStatsSelect = document.getElementById('weekStatsSelect');
-        if(weekStatsSelect) {
-            weekStatsSelect.addEventListener('change', () => {
-                updateStatsBySelectedWeek();
-            });
-        }
+        document.getElementById('fabAddBtn').addEventListener('click', () => {
+            refreshWeekSelect();
+            document.getElementById('addOverlay').classList.add('open');
+        });
 
-        let couponTypeSelect = document.getElementById('couponTypeSelect');
-        if(couponTypeSelect) {
-            couponTypeSelect.addEventListener('change', updateAmountOptionsByType);
-        }
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            document.getElementById('settingsOverlay').classList.add('open');
+        });
 
-        document.getElementById('addVoucherBtn')?.addEventListener('click', addVoucher);
-        document.getElementById('saveDataBtn')?.addEventListener('click', () => { saveToLocalStorage(); alert('已手動儲存至瀏覽器'); });
-        document.getElementById('exportDataBtn')?.addEventListener('click', exportData);
-        document.getElementById('importDataBtn')?.addEventListener('click', () => {
+        document.getElementById('couponTypeSelect').addEventListener('change', updateAmountOptionsByType);
+        document.getElementById('addVoucherBtn').addEventListener('click', addVoucher);
+
+        document.getElementById('weekViewSelect').addEventListener('change', (e) => {
+            currentViewWeekKey = e.target.value;
+            renderStats();
+            renderVouchers();
+        });
+
+        document.getElementById('detailUseBtn').addEventListener('click', markCurrentAsUsed);
+        document.getElementById('detailDeleteBtn').addEventListener('click', deleteCurrent);
+        document.getElementById('detailNoteBtn').addEventListener('click', openNoteEditor);
+
+        document.getElementById('saveNoteBtn').addEventListener('click', saveNote);
+
+        document.getElementById('saveDataBtn').addEventListener('click', () => {
+            saveToLocalStorage();
+            alert(t('alertSaved'));
+        });
+        document.getElementById('exportDataBtn').addEventListener('click', exportData);
+        document.getElementById('importDataBtn').addEventListener('click', () => {
             document.getElementById('importFileInput').click();
         });
-        document.getElementById('importFileInput')?.addEventListener('change', (e) => {
-            if(e.target.files.length) importData(e.target.files[0]);
+        document.getElementById('importFileInput').addEventListener('change', e => {
+            if (e.target.files.length) importData(e.target.files[0]);
             e.target.value = '';
         });
-        document.getElementById('resetDataBtn')?.addEventListener('click', resetAllData);
-        document.getElementById('closeNoteModal')?.addEventListener('click', closeNoteModal);
-        document.getElementById('saveNoteBtn')?.addEventListener('click', saveNote);
-        window.addEventListener('click', (e) => {
-            let modal = document.getElementById('noteModal');
-            if (e.target === modal) closeNoteModal();
+        document.getElementById('resetDataBtn').addEventListener('click', resetAll);
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchLang(btn.dataset.lang));
         });
-        bindFilterEvent();
     }
 
+    /* ===== 初始化 ===== */
     function init() {
         weeksData = generateWeeksList();
-        initWalletSelect();
+        loadLang();
+        applyI18n();
+        initWalletOptions();
         updateAmountOptionsByType();
         bindEvents();
         loadFromLocalStorage();
-        if(weeksData.length === 0) {
-            alert('注意: 活動期間未包含有效週五-週日區間，請檢查日期設定');
-        }
+        refreshWeekSelect();
+        renderAll();
     }
 
-    window.openNoteModal = openNoteModal;
     init();
 </script>
 
