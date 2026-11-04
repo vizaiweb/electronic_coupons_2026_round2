@@ -925,6 +925,7 @@
             statusUsed: '已使用',
             statusExpired: '已過期',
             statusExpiredLong: '已過期（逾期作廢）',
+            statusUnusedWithMinSpend: '滿 ${amount} 可用',
             noteEmpty: '（無）',
             btnUse: '✅ 標示已使用',
             btnDelete: '🗑️ 刪除',
@@ -993,6 +994,7 @@
             statusUsed: '已使用',
             statusExpired: '已过期',
             statusExpiredLong: '已过期（逾期作废）',
+            statusUnusedWithMinSpend: '满 ${amount} 可用',
             noteEmpty: '（无）',
             btnUse: '✅ 标示已使用',
             btnDelete: '🗑️ 删除',
@@ -1061,6 +1063,7 @@
             statusUsed: 'Used',
             statusExpired: 'Expired',
             statusExpiredLong: 'Expired',
+            statusUnusedWithMinSpend: 'Min. ${amount}',
             noteEmpty: '(none)',
             btnUse: '✅ Mark Used',
             btnDelete: '🗑️ Delete',
@@ -1403,9 +1406,22 @@
                 } else {
                     amountHtml = `<div class="v-amount">$${v.amount}</div>`;
                 }
+
                 let statusText = t('statusUnused');
-                if (v.used) statusText = t('statusUsed');
-                else if (expired) statusText = t('statusExpired');
+                if (v.used) {
+                    statusText = t('statusUsed');
+                } else if (expired) {
+                    statusText = t('statusExpired');
+                } else {
+                    // 未使用時，計算並顯示最低消費額門檻
+                    let minSpend = 0;
+                    if (v.couponType === 'merchant_discount') minSpend = 100;
+                    else if (v.couponType === 'gov') minSpend = v.amount * 3;
+                    // 禮遇券沒有門檻，不用替換文字，維持「未使用」
+                    if (minSpend > 0) {
+                        statusText = t('statusUnusedWithMinSpend', { amount: minSpend });
+                    }
+                }
 
                 html += `
                     <div class="voucher-card ${typeClass} ${stateClass}" data-id="${v.displayId}">
