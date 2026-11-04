@@ -1716,7 +1716,7 @@
         document.getElementById('detailNote').textContent = v.note || t('noteEmpty');
 
         const useBtn = document.getElementById('detailUseBtn');
-        useBtn.style.display = (v.used || expired) ? 'none' : 'block';
+useBtn.style.visibility = (v.used || expired) ? 'hidden' : 'visible';
 
         document.getElementById('detailOverlay').classList.add('open');
     }
